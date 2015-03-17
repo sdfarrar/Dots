@@ -1,15 +1,37 @@
 package game.entity;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import graphics.Renderer;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
+import static org.lwjgl.glfw.GLFW.glfwGetKey;
+import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STREAM_DRAW;
+import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
+import graphics.GameRenderer;
+import graphics.opengl.Shader;
+import graphics.opengl.ShaderProgram;
+import graphics.opengl.VertexArrayObject;
+import graphics.opengl.VertexBufferObject;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
 
 import math.Matrix4f;
 import math.Vector2f;
@@ -17,12 +39,6 @@ import math.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
-
-import other.Shader;
-import other.ShaderProgram;
-import other.Texture;
-import other.VertexArrayObject;
-import other.VertexBufferObject;
 
 public class Mouse extends Entity{
 	private boolean pressed;
@@ -141,7 +157,7 @@ public class Mouse extends Entity{
 	}
 
 	@Override
-	public void render(Renderer renderer, float alpha) {
+	public void render(GameRenderer renderer, float alpha) {
 //		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 //        float x = interpolatedPosition.x;
 //        float y = interpolatedPosition.y;        

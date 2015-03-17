@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright © 2015, Heiko Brumme
+ * Copyright © 2014, Heiko Brumme
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,59 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package game.state;
+package graphics.opengl;
 
-import game.core.AbstractGame;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
- * States are used for the current game state.
+ * This class represents a Vertex Array Object (VAO).
  *
  * @author Heiko Brumme
  */
-public interface State {
+public class VertexArrayObject {
 
     /**
-     * Handles input of the state.
+     * Stores the handle of the VAO.
      */
-    public void input();
+    private final int id;
 
     /**
-     * Updates the state (fixed timestep).
+     * Creates a Vertex Array Object (VAO).
      */
-    public default void update() {
-        update(1f / AbstractGame.TARGET_UPS);
+    public VertexArrayObject() {
+        id = glGenVertexArrays();
     }
 
     /**
-     * Updates the state (variable timestep)
-     *
-     * @param delta Time difference in seconds
+     * Binds the VAO.
      */
-    public void update(float delta);
-
-    /**
-     * Renders the state (no interpolation).
-     */
-    public default void render() {
-        render(1f);
+    public void bind() {
+        glBindVertexArray(id);
     }
 
     /**
-     * Renders the state (with interpolation).
+     * Deletes the VAO.
+     */
+    public void delete() {
+        glDeleteVertexArrays(id);
+    }
+
+    /**
+     * Getter for the Vertex Array Object ID.
      *
-     * @param alpha Alpha value, needed for interpolation
+     * @return Handle of the VAO
      */
-    public void render(float alpha);
-
-    /**
-     * Gets executed when entering the state, useful for initialization.
-     */
-    public void enter();
-
-    /**
-     * Gets executed when leaving the state, useful for disposing.
-     */
-    public void exit();
-    
-    public abstract void dispose();
+    public int getID() {
+        return id;
+    }
 }
