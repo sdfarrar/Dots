@@ -1,6 +1,12 @@
 package game.core;
 
+import graphics.GameRenderer;
+import graphics.Window;
+
 public abstract class AbstractGame {
+	
+	protected Window window;
+	protected GameRenderer renderer;
 	
 	
 	public AbstractGame(){
