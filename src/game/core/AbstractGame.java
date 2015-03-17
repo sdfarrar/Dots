@@ -10,7 +10,8 @@ public abstract class AbstractGame {
 	
 	
 	public AbstractGame(){
-		
+		window = new Window(800, 600, "Dots", false);
+		renderer = new GameRenderer();
 	}
 	
 	public void start(){
