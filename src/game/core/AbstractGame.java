@@ -21,13 +21,14 @@ public abstract class AbstractGame {
 	}
 	
 	public void init(){
-		
+		renderer.init();
 	}
 	
 	public abstract void gameloop();
 	
 	public void dispose(){
-		
+		window.destroy();
+		renderer.dispose();
 	}
 	
 	

@@ -21,17 +21,8 @@ import graphics.opengl.VertexArrayObject;
 import graphics.opengl.VertexBufferObject;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.Renderer;
-
 import math.Matrix4f;
 
 import org.lwjgl.BufferUtils;
