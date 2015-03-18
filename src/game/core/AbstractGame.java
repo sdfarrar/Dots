@@ -1,5 +1,6 @@
 package game.core;
 
+import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 import java.util.logging.Level;
@@ -8,10 +9,10 @@ import java.util.logging.Logger;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
-import silvertiger.tutorial.lwjgl.core.Game;
 import graphics.GameRenderer;
 import graphics.Window;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
 
 public abstract class AbstractGame {
 	public static final int TARGET_FPS = 120;
@@ -20,9 +21,9 @@ public abstract class AbstractGame {
 	protected Timer timer;
 	protected Window window;
 	protected GameRenderer renderer;
+	protected boolean running;
 	
-	private GLFWErrorCallback errorCallback;
-	private boolean running;
+	private GLFWErrorCallback errorCallback;	
 	
 	public AbstractGame(){
 		timer = new Timer();
@@ -39,6 +40,10 @@ public abstract class AbstractGame {
 		errorCallback = Callbacks.errorCallbackPrint();
 		glfwSetErrorCallback(errorCallback);
 		
+		// Initialize glfw
+		if (glfwInit() != GL_TRUE) {
+            throw new IllegalStateException("Unable to initialize GLFW!");
+        }
 		
 		window = new Window(800, 600, "Dots", false);
 		timer.init();
@@ -48,6 +53,23 @@ public abstract class AbstractGame {
 	
 	public abstract void gameloop();
 	public abstract void input();
+	public abstract void renderText();
+	
+	public void update(){
+		update(1f / TARGET_UPS);
+	}
+	
+	public void update(float delta){
+		
+	}	
+	
+	public void render(){
+		render(1f);
+	}
+	
+	public void render(float alpha){
+		
+	}	
 	
 	public void dispose(){
 		window.destroy();

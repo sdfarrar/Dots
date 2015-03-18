@@ -64,8 +64,8 @@ public class GameRenderer {
         vbo.uploadData(GL_ARRAY_BUFFER, size, GL_STREAM_DRAW);
 
         // load our default shaders
-        vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "resources/test_vertex.glsl");
-        fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "resources/test_fragment.glsl");
+        vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "res/test_vertex.glsl");
+        fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "res/test_fragment.glsl");
 
         // create the shader programe
         program = new ShaderProgram();
