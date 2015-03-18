@@ -9,10 +9,14 @@ import java.util.logging.Logger;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
+import game.entity.Mouse;
 import graphics.GameRenderer;
 import graphics.Window;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
+import static org.lwjgl.opengl.GL11.glClear;
 
 public abstract class AbstractGame {
 	public static final int TARGET_FPS = 120;
@@ -23,11 +27,14 @@ public abstract class AbstractGame {
 	protected GameRenderer renderer;
 	protected boolean running;
 	
-	private GLFWErrorCallback errorCallback;	
+	private GLFWErrorCallback errorCallback;
+	
+	protected Mouse mouse;
 	
 	public AbstractGame(){
 		timer = new Timer();
-		renderer = new GameRenderer();		
+		//renderer = new GameRenderer();
+		
 	}
 	
 	public void start(){
@@ -47,7 +54,10 @@ public abstract class AbstractGame {
 		
 		window = new Window(800, 600, "Dots", false);
 		timer.init();
-		renderer.init();
+		//renderer.init();
+		
+		mouse = new Mouse(0, 0, 25);
+		mouse.init();		
 		running = true;
 	}
 	
@@ -60,7 +70,7 @@ public abstract class AbstractGame {
 	}
 	
 	public void update(float delta){
-		
+		mouse.update(delta);
 	}	
 	
 	public void render(){
@@ -68,12 +78,14 @@ public abstract class AbstractGame {
 	}
 	
 	public void render(float alpha){
-		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		mouse.renderCircle(alpha);
 	}	
 	
 	public void dispose(){
 		window.destroy();
-		renderer.dispose();
+		//renderer.dispose();
+		mouse.dispose();
 		glfwTerminate();
 		errorCallback.release();
 	}

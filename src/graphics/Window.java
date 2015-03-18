@@ -41,7 +41,6 @@ public class Window {
 	private boolean vsync;
 	
     private final GLFWKeyCallback keyCallback;
-    private final GLFWCursorPosCallback mousePosCallback;    
 
     public Window(int width, int height, CharSequence title, boolean vsync) {
         this.vsync = vsync;
@@ -85,13 +84,6 @@ public class Window {
                 }
             }
         });
-        
-        glfwSetCursorPosCallback(handle, mousePosCallback = new GLFWCursorPosCallback(){
-        	@Override
-        	public void invoke(long window, double xpos, double ypos) {
-        		System.out.println("xpos " + xpos + " ypos " + ypos);
-        	}
-        });
 
     }
 
@@ -111,7 +103,6 @@ public class Window {
     public void destroy() {
         glfwDestroyWindow(handle);
         keyCallback.release();
-        mousePosCallback.release();
     }
 
     public void setVSync(boolean vsync) {

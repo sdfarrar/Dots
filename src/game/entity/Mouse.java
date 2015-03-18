@@ -58,7 +58,7 @@ public class Mouse extends Entity{
 	public Mouse(float x, float y, float radius) {
 		super(x, y, radius, radius);
 		
-		long id = glfwGetCurrentContext();
+		long id = GLFW.glfwGetCurrentContext();
 		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
         GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
@@ -78,32 +78,27 @@ public class Mouse extends Entity{
 	}
 	
 	public void init(){
-
-        /* Generate Vertex Array Object */
+		numVertices = 0;
+        drawing = false;
+        
+        // generate vao
         vao = new VertexArrayObject();
         vao.bind();
 
-        /* Generate Vertex Buffer Object */
+        // generate vbo
         vbo = new VertexBufferObject();
         vbo.bind(GL_ARRAY_BUFFER);
 
-        /* Create FloatBuffer */
+        // create the vertices buffer
         vertices = BufferUtils.createFloatBuffer(4096);
 
-        /* Upload null data to allocate storage for the VBO */
+        // upload null data to the gpu to allocate space for the vbo
         long size = vertices.capacity() * Float.BYTES;
-        vbo.uploadData(GL_ARRAY_BUFFER, size, GL_STREAM_DRAW);
+        vbo.uploadData(GL_ARRAY_BUFFER, size, GL_STREAM_DRAW);        
 
-        /* Initialize variables */
-        numVertices = 0;
-        drawing = false;
-
-        /* Load shaders */
         vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "res/test_vertex.glsl");
         fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "res/test_fragment.glsl");
 
-
-        /* Create shader program */
         program = new ShaderProgram();
         program.attachShader(vertexShader);
         program.attachShader(fragmentShader);
@@ -111,7 +106,7 @@ public class Mouse extends Entity{
         program.link();
         program.use();
 
-        /* Get width and height of framebuffer */
+        // Get width and height of window for the orthographic matrix
         long window = GLFW.glfwGetCurrentContext();
         IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
@@ -119,19 +114,18 @@ public class Mouse extends Entity{
         int width = widthBuffer.get();
         int height = heightBuffer.get();
 
-        /* Specify Vertex Pointers */
         specifyVertexAttributes();
 
-        /* Set texture uniform */
+        // Set texture uniform
 //        int uniTex = program.getUniformLocation("texImage");
 //        program.setUniform(uniTex, 0);
 
-        /* Set projection matrix to an orthographic projection */
+        // Set projection matrix to an orthographic projection
         Matrix4f ortho = Matrix4f.orthographic(0f, width, 0f, height, -1f, 1f);
-        int uniProjection = program.getUniformLocation("projection");
+        int uniProjection = program.getUniformLocation("ortho");
         program.setUniform(uniProjection, ortho);
 
-        /* Enable blending */
+        // Enable alpha blending
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
@@ -168,7 +162,7 @@ public class Mouse extends Entity{
 		drawing = true;
 
 		// clear the screen. this will remove anything drawn before this
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		float x = position.x;
 		float y = position.y;
@@ -211,7 +205,7 @@ public class Mouse extends Entity{
 		drawing = true;
 
 		// clear the screen. this will remove anything drawn before this
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		float x = position.x;
 		float y = position.y;
@@ -227,8 +221,7 @@ public class Mouse extends Entity{
 			float cy = y + (float) (width * Math.sin(i));
 			vertices.put(cx).put(cy).put(r).put(g).put(b);//.put(0).put(1);
 			count++;
-		}
-		
+		}		
 		vertices.flip();
 		
 		vao.bind();
@@ -237,7 +230,7 @@ public class Mouse extends Entity{
 		// upload the new vertex data
 		vbo.bind(GL_ARRAY_BUFFER);
 		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
-		
+
 		glDrawArrays(GL_LINE_LOOP, 0, count);
 		
 		vertices.clear();

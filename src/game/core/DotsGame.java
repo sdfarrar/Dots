@@ -4,7 +4,7 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void input() {
-		
+		mouse.input();
 	}
 
 	@Override
