@@ -3,6 +3,7 @@ package graphics;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -23,7 +24,9 @@ import graphics.opengl.VertexBufferObject;
 import java.awt.Color;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
 import math.Matrix4f;
+import math.Vector2f;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -304,8 +307,8 @@ public class GameRenderer {
         program.delete();
     }
 
-
-    private void specifyVertexAttributes() {
+    // Specifies vertex attributes for position, color, and texture coordinates
+//    private void specifyVertexAttributes() {
 //    	// Specify vertex pointer
 //        int posAttrib = program.getAttributeLocation("position");
 //        program.enableVertexAttribute(posAttrib);
@@ -320,5 +323,99 @@ public class GameRenderer {
 //        int texAttrib = program.getAttributeLocation("texcoord");
 //        program.enableVertexAttribute(texAttrib);
 //        program.pointVertexAttribute(texAttrib, 2, 7 * Float.BYTES, 5 * Float.BYTES);
+//    }
+
+    // Specifies vertex attributes for position and color
+	private void specifyVertexAttributes() {
+        /* Specify Vertex Pointer */
+        int posAttrib = program.getAttributeLocation("position");
+        program.enableVertexAttribute(posAttrib);
+        program.pointVertexAttribute(posAttrib, 2, 5 * Float.BYTES, 0);
+
+        /* Specify Color Pointer */
+        int colAttrib = program.getAttributeLocation("color");
+        program.enableVertexAttribute(colAttrib);
+        program.pointVertexAttribute(colAttrib, 3, 5 * Float.BYTES, 2 * Float.BYTES);
     }
+    
+	public void drawCircle(ShaderProgram program, float x, float y, float width, Color color) {
+		float increment = 0.075f;
+//		int verticesToAdd = (int) (Math.round((2*Math.PI)/increment)*5);
+//		if(vertices.remaining()<verticesToAdd)
+		//System.out.println(verticesToAdd);
+		
+		// Since drawing circles utilizes line loops rather than triangles
+		// clear the buffer if any vertices are a
+		if(numVertices>0)
+			flush();
+		
+		
+		float r = color.getRed();
+		float g = color.getGreen();
+		float b = color.getBlue();
+		
+		for(float i=0; i<2*Math.PI; i+=increment){
+			float cx = x + (float) (width * Math.cos(i));
+			float cy = y + (float) (width * Math.sin(i));
+			vertices.put(cx).put(cy).put(r).put(g).put(b);
+			numVertices++;
+		}		
+		vertices.flip();
+		
+		vao.bind();
+		program.use();
+		
+		// upload the new vertex data
+		vbo.bind(GL_ARRAY_BUFFER);
+		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
+
+		glDrawArrays(GL_LINE_LOOP, 0, numVertices);
+		
+		vertices.clear();
+		numVertices = 0;		
+		//drawing = false;		
+	}
+	
+	public void drawSquare(ShaderProgram program, float x, float y, float width, float height, Color c){
+		//drawing = true;
+		if(vertices.remaining() < 6*5){
+			flush();
+		}
+
+	
+		float r = Color.WHITE.getRed();
+		float g = Color.WHITE.getGreen();
+		float b = Color.WHITE.getBlue();
+		
+		Vector2f tl = new Vector2f(x-width/2,y+height/2);
+		Vector2f bl = new Vector2f(x-width/2,y-height/2);
+		Vector2f tr = new Vector2f(x+width/2, y+height/2);
+		Vector2f br = new Vector2f(x+width/2, y-height/2);
+		
+		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b);
+		vertices.put(tl.x).put(tl.y).put(r).put(g).put(b);
+		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b);
+		
+		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b);
+		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b);
+		vertices.put(br.x).put(br.y).put(r).put(g).put(b);
+		
+		numVertices += 6;
+		
+//		vertices.flip();
+//		
+//		//texture.bind();
+//		vao.bind();
+//		program.use();
+//		
+//		// upload the new vertex data
+//		vbo.bind(GL_ARRAY_BUFFER);
+//		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
+//		
+//		glDrawArrays(GL_TRIANGLES, 0, 6);
+		
+		//vertices.clear();
+		//numVertices = 0;		
+		//drawing = false;
+	}
 }

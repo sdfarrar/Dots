@@ -156,6 +156,10 @@ public class Mouse extends Entity{
 //        float x = interpolatedPosition.x;
 //        float y = interpolatedPosition.y;        
 //        renderer.drawTextureRegion(texture, position.x, position.y, 0, 0, width, height, color);
+		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
+		float x = interpolatedPosition.x;
+		float y = interpolatedPosition.y;
+		renderer.drawCircle(program, x, y, width, color);
 	}
 	
 	public void renderSquare(float alpha){

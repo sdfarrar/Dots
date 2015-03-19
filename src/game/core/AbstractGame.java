@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
+import game.entity.Dot;
 import game.entity.Mouse;
 import graphics.GameRenderer;
 import graphics.Window;
@@ -30,10 +31,11 @@ public abstract class AbstractGame {
 	private GLFWErrorCallback errorCallback;
 	
 	protected Mouse mouse;
+	protected Dot dot;
 	
 	public AbstractGame(){
 		timer = new Timer();
-		//renderer = new GameRenderer();
+		renderer = new GameRenderer();
 		
 	}
 	
@@ -54,10 +56,13 @@ public abstract class AbstractGame {
 		
 		window = new Window(800, 600, "Dots", false);
 		timer.init();
-		//renderer.init();
+		renderer.init();
 		
 		mouse = new Mouse(0, 0, 25);
-		mouse.init();		
+		mouse.init();
+		dot = new Dot(300, 200, 50, 100);
+		dot.init();
+		
 		running = true;
 	}
 	
@@ -71,6 +76,7 @@ public abstract class AbstractGame {
 	
 	public void update(float delta){
 		mouse.update(delta);
+		dot.update(delta);
 	}	
 	
 	public void render(){
@@ -78,14 +84,19 @@ public abstract class AbstractGame {
 	}
 	
 	public void render(float alpha){
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		mouse.renderCircle(alpha);
+		renderer.clear();
+		renderer.begin();
+		//mouse.renderCircle(alpha);
+		mouse.render(renderer, alpha);
+		dot.render(renderer, alpha);
+		renderer.end();
 	}	
 	
 	public void dispose(){
 		window.destroy();
-		//renderer.dispose();
+		renderer.dispose();
 		mouse.dispose();
+		dot.dispose();
 		glfwTerminate();
 		errorCallback.release();
 	}
