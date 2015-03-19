@@ -18,7 +18,7 @@ public class Dot extends Entity {
 
 	public Dot(float x, float y, float width, float height) {
 		super(x, y, width, height);
-		color = Color.white;
+		color = Color.cyan;
 	}
 	
 	@Override

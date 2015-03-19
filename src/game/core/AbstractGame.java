@@ -32,11 +32,11 @@ public abstract class AbstractGame {
 	
 	protected Mouse mouse;
 	protected Dot dot;
+	protected Dot dot2;
 	
 	public AbstractGame(){
 		timer = new Timer();
-		renderer = new GameRenderer();
-		
+		renderer = new GameRenderer();		
 	}
 	
 	public void start(){
@@ -63,6 +63,9 @@ public abstract class AbstractGame {
 		dot = new Dot(300, 200, 50, 100);
 		dot.init();
 		
+		dot2 = new Dot(400, 400, 125, 75);
+		dot2.init();
+		
 		running = true;
 	}
 	
@@ -77,6 +80,7 @@ public abstract class AbstractGame {
 	public void update(float delta){
 		mouse.update(delta);
 		dot.update(delta);
+		dot2.update(delta);
 	}	
 	
 	public void render(){
@@ -86,9 +90,10 @@ public abstract class AbstractGame {
 	public void render(float alpha){
 		renderer.clear();
 		renderer.begin();
-		//mouse.renderCircle(alpha);
-		mouse.render(renderer, alpha);
+		//mouse.renderCircle(alpha);		
 		dot.render(renderer, alpha);
+		dot2.render(renderer, alpha);
+		mouse.render(renderer, alpha);
 		renderer.end();
 	}	
 	
@@ -97,6 +102,7 @@ public abstract class AbstractGame {
 		renderer.dispose();
 		mouse.dispose();
 		dot.dispose();
+		dot2.dispose();
 		glfwTerminate();
 		errorCallback.release();
 	}

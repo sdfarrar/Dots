@@ -376,16 +376,16 @@ public class GameRenderer {
 		//drawing = false;		
 	}
 	
-	public void drawSquare(ShaderProgram program, float x, float y, float width, float height, Color c){
+	public void drawSquare(ShaderProgram program, float x, float y, float width, float height, Color color){
 		//drawing = true;
 		if(vertices.remaining() < 6*5){
 			flush();
 		}
 
 	
-		float r = Color.WHITE.getRed();
-		float g = Color.WHITE.getGreen();
-		float b = Color.WHITE.getBlue();
+		float r = color.getRed();
+		float g = color.getGreen();
+		float b = color.getBlue();
 		
 		Vector2f tl = new Vector2f(x-width/2,y+height/2);
 		Vector2f bl = new Vector2f(x-width/2,y-height/2);
