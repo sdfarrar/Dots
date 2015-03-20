@@ -40,9 +40,14 @@ public class Dot extends Entity {
 
 	}
 
-	@Override
-	public void update(float delta) {
+	public void update(Mouse mouse, float delta) {
 		previousPosition = position;
+		float center_x = mouse.getX();
+		float center_y = mouse.getY();
+		float radius = mouse.getWidth();
+		if(Math.pow((this.getX() - center_x),2) + Math.pow((this.getY() - center_y),2) <= Math.pow(radius,2)){
+			System.out.println("In circle");
+		}
 	}
 
 	@Override
@@ -60,6 +65,11 @@ public class Dot extends Entity {
 //		x = position.x;
 //		y = position.y;
 		renderer.drawSquare(program, x, y, width, height, color);		
+	}
+
+	@Override
+	public void update(float delta) {
+
 	}	
 
 }

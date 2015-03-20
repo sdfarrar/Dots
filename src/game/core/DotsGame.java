@@ -17,9 +17,7 @@ public class DotsGame extends VariableTimestepGame {
 	
 	public DotsGame(){
 		super();
-		dots = new ArrayList<Dot>();
-		
-		
+		dots = new ArrayList<Dot>();		
 	}
 	
 	@Override
@@ -57,15 +55,11 @@ public class DotsGame extends VariableTimestepGame {
 	@Override
 	public void updateGameObjects(float delta) {
 		mouse.update(delta);
-//		dot.update(delta);
-//		dot2.update(delta);
-		dots.forEach((dot) -> dot.update(delta));
+		dots.forEach((dot) -> dot.update(mouse, delta));		
 	}
 
 	@Override
 	public void renderGameObjects(float alpha) {
-//		dot.render(renderer, alpha);
-//		dot2.render(renderer, alpha);
 		dots.forEach((dot) -> dot.render(renderer, alpha));
 		mouse.render(renderer, alpha);
 	}
@@ -73,8 +67,6 @@ public class DotsGame extends VariableTimestepGame {
 	@Override
 	public void disposeGameObjects() {
 		mouse.dispose();
-//		dot.dispose();
-//		dot2.dispose();
 	}
 	
 }
