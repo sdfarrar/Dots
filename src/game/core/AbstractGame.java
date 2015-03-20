@@ -30,9 +30,7 @@ public abstract class AbstractGame {
 	
 	private GLFWErrorCallback errorCallback;
 	
-	protected Mouse mouse;
-	protected Dot dot;
-	protected Dot dot2;
+	
 	
 	public AbstractGame(){
 		timer = new Timer();
@@ -58,17 +56,22 @@ public abstract class AbstractGame {
 		timer.init();
 		renderer.init();
 		
-		mouse = new Mouse(0, 0, 25);
-		mouse.init();
-		dot = new Dot(300, 200, 50, 100);
-		dot.init();
-		
-		dot2 = new Dot(400, 400, 125, 75);
-		dot2.init();
+//		mouse = new Mouse(0, 0, 25);
+//		mouse.init();
+//		dot = new Dot(300, 200, 50, 100);
+//		dot.init();
+//		
+//		dot2 = new Dot(400, 400, 125, 75);
+//		dot2.init();
+		initGameObjects();
 		
 		running = true;
 	}
 	
+	public abstract void initGameObjects();
+	public abstract void updateGameObjects(float delta);
+	public abstract void renderGameObjects(float alpha);
+	public abstract void disposeGameObjects();
 	public abstract void gameloop();
 	public abstract void input();
 	public abstract void renderText();
@@ -78,9 +81,10 @@ public abstract class AbstractGame {
 	}
 	
 	public void update(float delta){
-		mouse.update(delta);
-		dot.update(delta);
-		dot2.update(delta);
+//		mouse.update(delta);
+//		dot.update(delta);
+//		dot2.update(delta);
+		updateGameObjects(delta);
 	}	
 	
 	public void render(){
@@ -90,19 +94,21 @@ public abstract class AbstractGame {
 	public void render(float alpha){
 		renderer.clear();
 		renderer.begin();
-		//mouse.renderCircle(alpha);		
-		dot.render(renderer, alpha);
-		dot2.render(renderer, alpha);
-		mouse.render(renderer, alpha);
+		//mouse.renderCircle(alpha);
+		renderGameObjects(alpha);
+//		dot.render(renderer, alpha);
+//		dot2.render(renderer, alpha);
+//		mouse.render(renderer, alpha);
 		renderer.end();
 	}	
 	
 	public void dispose(){
 		window.destroy();
 		renderer.dispose();
-		mouse.dispose();
-		dot.dispose();
-		dot2.dispose();
+//		mouse.dispose();
+//		dot.dispose();
+//		dot2.dispose();
+		disposeGameObjects();
 		glfwTerminate();
 		errorCallback.release();
 	}
