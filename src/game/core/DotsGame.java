@@ -55,7 +55,10 @@ public class DotsGame extends VariableTimestepGame {
 	@Override
 	public void updateGameObjects(float delta) {
 		mouse.update(delta);
-		dots.forEach((dot) -> dot.update(mouse, delta));		
+		dots.forEach((dot) -> {
+			dot.update(delta);
+			dot.checkCollision(mouse);
+		});		
 	}
 
 	@Override

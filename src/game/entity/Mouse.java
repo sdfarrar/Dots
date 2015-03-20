@@ -41,6 +41,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
 public class Mouse extends Entity{
+	private Vector2f deltaPosition;
 	private boolean pressed;
 	private GLFWCursorPosCallback mousePosCallback;
 	
@@ -67,11 +68,12 @@ public class Mouse extends Entity{
         glfwSetCursorPosCallback(id, mousePosCallback = new GLFWCursorPosCallback(){
         	@Override
         	public void invoke(long window, double xpos, double ypos) {
-        		previousPosition = position;
+        		previousPosition = new Vector2f(position.x, position.y);
         		position.x=(float)xpos;
         		position.y=(float) (height-ypos); // should invert y axis for cursor on the screen
-        		
-        		System.out.println("xpos: " + position.x + ", ypos: " + position.y + "    pressed: " + pressed);
+        		//deltaPosition = new Vector2f((previousPosition.x-position.x), (previousPosition.y-position.y));
+        		deltaPosition = previousPosition.subtract(position);
+        		System.out.println("pos: " + position + " deltaPos: " + deltaPosition + " pressed: " + pressed);
         	}
         });
 
@@ -251,6 +253,14 @@ public class Mouse extends Entity{
 		vertexShader.delete();
 		fragmentShader.delete();
 		program.delete();
+	}
+	
+	public float getDx(){
+		return deltaPosition.x;
+	}
+	
+	public float getDy(){
+		return deltaPosition.y;
 	}
 	
 	private void specifyVertexAttributes() {

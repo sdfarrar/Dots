@@ -15,10 +15,13 @@ public class Dot extends Entity {
 	private Shader vertexShader;
 	private Shader fragmentShader;
 	private ShaderProgram program;
+	
+	private Vector2f velocity;
 
 	public Dot(float x, float y, float width, float height) {
 		super(x, y, width, height);
 		color = Color.white;
+		velocity = new Vector2f();
 	}
 	
 	@Override
@@ -40,14 +43,10 @@ public class Dot extends Entity {
 
 	}
 
-	public void update(Mouse mouse, float delta) {
+	public void update(float delta) {
 		previousPosition = position;
-		float center_x = mouse.getX();
-		float center_y = mouse.getY();
-		float radius = mouse.getWidth();
-		if(Math.pow((this.getX() - center_x),2) + Math.pow((this.getY() - center_y),2) <= Math.pow(radius,2)){
-			System.out.println("In circle");
-		}
+		position = position.add(velocity);
+		//System.out.println(delta);
 	}
 
 	@Override
@@ -64,12 +63,20 @@ public class Dot extends Entity {
 		float y = interpolatedPosition.y;
 //		x = position.x;
 //		y = position.y;
-		renderer.drawSquare(program, x, y, width, height, color);		
+		renderer.drawSquare(program, x, y, width, height, color);
 	}
 
-	@Override
-	public void update(float delta) {
-
-	}	
-
+	public void checkCollision(Mouse mouse){
+		float center_x = mouse.getX();
+		float center_y = mouse.getY();
+		float x = position.x;
+		float y = position.y;
+		float radius = mouse.getWidth();
+		if(Math.pow((x - center_x),2) + Math.pow((y - center_y),2) <= Math.pow(radius,2)){
+			float dx = mouse.getDx();
+			float dy = mouse.getDy();
+			velocity = new Vector2f(-dx, -dy);
+		}
+	}
+	
 }

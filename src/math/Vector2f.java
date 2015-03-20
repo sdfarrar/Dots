@@ -168,5 +168,9 @@ public class Vector2f {
         buffer.put(x).put(y);
         buffer.flip();
         return buffer;
+    };
+    
+    public String toString(){
+    	return "Vector2f(" + this.x + "," + this.y + ")";
     }
 }
