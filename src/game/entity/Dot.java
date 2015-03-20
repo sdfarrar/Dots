@@ -18,7 +18,7 @@ public class Dot extends Entity {
 
 	public Dot(float x, float y, float width, float height) {
 		super(x, y, width, height);
-		color = Color.cyan;
+		color = Color.white;
 	}
 	
 	@Override
@@ -42,8 +42,7 @@ public class Dot extends Entity {
 
 	@Override
 	public void update(float delta) {
-		// TODO Auto-generated method stub
-
+		previousPosition = position;
 	}
 
 	@Override
@@ -58,8 +57,8 @@ public class Dot extends Entity {
 		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 		float x = interpolatedPosition.x;
 		float y = interpolatedPosition.y;
-		x = position.x;
-		y = position.y;
+//		x = position.x;
+//		y = position.y;
 		renderer.drawSquare(program, x, y, width, height, color);		
 	}	
 
