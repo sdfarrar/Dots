@@ -55,10 +55,12 @@ public class Mouse extends Entity{
 	private FloatBuffer vertices;
 	private int numVertices;
 	private boolean drawing;
+	
+	private boolean moved;
 
 	public Mouse(float x, float y, float radius) {
 		super(x, y, radius, radius);
-		
+		moved = false;
 		long id = GLFW.glfwGetCurrentContext();
 		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
@@ -74,6 +76,7 @@ public class Mouse extends Entity{
         		//deltaPosition = new Vector2f((previousPosition.x-position.x), (previousPosition.y-position.y));
         		deltaPosition = previousPosition.subtract(position);
         		System.out.println("pos: " + position + " deltaPos: " + deltaPosition + " pressed: " + pressed);
+        		moved=true;
         	}
         });
 
@@ -144,6 +147,12 @@ public class Mouse extends Entity{
 			}else{
 				System.out.println("Minimum radius of " + width + " reached.");
 			}
+		}
+		if(moved){
+			//System.out.println(deltaPosition);
+			//moved = false;
+		}else{
+			//deltaPosition = new Vector2f();
 		}
 	}
 
@@ -261,6 +270,10 @@ public class Mouse extends Entity{
 	
 	public float getDy(){
 		return deltaPosition.y;
+	}
+	
+	public boolean isPressed(){
+		return pressed;
 	}
 	
 	private void specifyVertexAttributes() {

@@ -1,5 +1,9 @@
 package game.core;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
+import static org.lwjgl.glfw.GLFW.glfwGetKey;
 import game.entity.Dot;
 import game.entity.Mouse;
 
@@ -13,16 +17,24 @@ import org.lwjgl.glfw.GLFW;
 public class DotsGame extends VariableTimestepGame {
 	private Mouse mouse;
 	private List<Dot> dots;
+	private int gameWidth, gameHeight;
 	
+	private boolean reset;
 	
 	public DotsGame(){
 		super();
-		dots = new ArrayList<Dot>();		
+		dots = new ArrayList<Dot>();
+		reset = false;
 	}
 	
 	@Override
 	public void input() {
 		mouse.input();
+		
+		long window = glfwGetCurrentContext();
+		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
+			reset = true;
+		}
 	}
 
 	@Override
@@ -40,25 +52,35 @@ public class DotsGame extends VariableTimestepGame {
 		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
         GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
-        int height = heightBuffer.get();
-        int width = widthBuffer.get();
+        gameHeight = heightBuffer.get();
+        gameWidth = widthBuffer.get();
         
 //        for(float i=2; i<width; i+=4){
 //        	for(float j=2; j<height; j+=4){
 //        		dots.add(new Dot(i, j, 1, 1));
 //        	}
 //        }
-        
-        dots.add(new Dot(width/2, height/2, 2, 2));
+        for(float i=(gameWidth/2)-50; i<(gameWidth/2)+50; i+=2){
+        	for(float j=(gameHeight/2)-50; j<(gameHeight/2)+50; j+=2){
+        		dots.add(new Dot(i, j, 1, 1));
+            }
+        }
 	}
 
 	@Override
 	public void updateGameObjects(float delta) {
 		mouse.update(delta);
-		dots.forEach((dot) -> {
-			dot.update(delta);
-			dot.checkCollision(mouse);
-		});		
+		
+		if(reset){
+			dots.forEach((dot) -> dot.reset());
+			reset = false;
+		}else{
+			dots.forEach((dot) -> {
+				dot.update(delta);
+				dot.collidesWith(mouse);
+				dot.checkCollision(gameWidth, gameHeight);
+			});		
+		}
 	}
 
 	@Override
