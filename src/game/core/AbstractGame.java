@@ -52,7 +52,7 @@ public abstract class AbstractGame {
             throw new IllegalStateException("Unable to initialize GLFW!");
         }
 		
-		window = new Window(800, 600, "Dots", false);
+		window = new Window(1024, 768, "Dots", false);
 		timer.init();
 		renderer.init();
 

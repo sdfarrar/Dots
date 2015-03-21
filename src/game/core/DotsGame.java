@@ -55,16 +55,16 @@ public class DotsGame extends VariableTimestepGame {
         gameHeight = heightBuffer.get();
         gameWidth = widthBuffer.get();
         
-//        for(float i=2; i<width; i+=4){
-//        	for(float j=2; j<height; j+=4){
-//        		dots.add(new Dot(i, j, 1, 1));
-//        	}
-//        }
-        for(float i=(gameWidth/2)-50; i<(gameWidth/2)+50; i+=2){
-        	for(float j=(gameHeight/2)-50; j<(gameHeight/2)+50; j+=2){
+        for(float i=1; i<gameWidth; i+=4){
+        	for(float j=1; j<gameHeight; j+=4){
         		dots.add(new Dot(i, j, 1, 1));
-            }
+        	}
         }
+//        for(float i=(gameWidth/2)-50; i<(gameWidth/2)+50; i+=2){
+//        	for(float j=(gameHeight/2)-50; j<(gameHeight/2)+50; j+=2){
+//        		dots.add(new Dot(i, j, 1, 1));
+//            }
+//        }
 	}
 
 	@Override
