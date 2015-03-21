@@ -55,16 +55,16 @@ public class Mouse extends Entity{
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
         GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
         int height = heightBuffer.get();
-        int width = widthBuffer.get();
+        //int width = widthBuffer.get();
         glfwSetCursorPosCallback(id, mousePosCallback = new GLFWCursorPosCallback(){
         	@Override
         	public void invoke(long window, double xpos, double ypos) {
         		previousPosition = new Vector2f(position.x, position.y);
         		position.x=(float)xpos;
         		position.y=(float) (height-ypos); // should invert y axis for cursor on the screen
-        		//deltaPosition = new Vector2f((previousPosition.x-position.x), (previousPosition.y-position.y));
-        		deltaPosition = previousPosition.subtract(position);
-        		System.out.println("pos: " + position + " deltaPos: " + deltaPosition + " pressed: " + pressed);
+
+        		//deltaPosition = previousPosition.subtract(position);
+
         		moved=true;
         	}
         });
@@ -89,17 +89,19 @@ public class Mouse extends Entity{
 			}
 		}
 		
-		if(moved){
-			//System.out.println(deltaPosition);
-			//moved = false;
-		}else{
-			//deltaPosition = new Vector2f();
-		}
+		
 	}
 
 	@Override
 	public void update(float delta) {
-		
+		if(moved){
+			deltaPosition = previousPosition.subtract(position);
+			deltaPosition = new Vector2f(previousPosition.x-position.x, previousPosition.y-position.y);
+			System.out.println(deltaPosition);
+			moved = false;
+		}else{
+			deltaPosition = new Vector2f();
+		}
 	}
 
 	@Override

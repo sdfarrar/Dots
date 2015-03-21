@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.glfw.GLFW.*;
 
 import java.awt.Color;
+import java.util.Random;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -22,7 +23,7 @@ public class Dot extends Entity {
 
 	public Dot(float x, float y, float width, float height) {
 		super(x, y, width, height);
-		color = Color.white;
+		color = Color.green;
 		velocity = new Vector2f();
 		originalPosition = new Vector2f(x,y);
 	}
@@ -69,8 +70,8 @@ public class Dot extends Entity {
 			float y = position.y;
 			float radius = mouse.getWidth();
 			if(Math.pow((x - center_x),2) + Math.pow((y - center_y),2) <= Math.pow(radius,2)){
-				float dx = mouse.getDx()*0.1f;
-				float dy = mouse.getDy()*0.1f;
+				float dx = mouse.getDx()*0.25f;
+				float dy = mouse.getDy()*0.25f;
 				velocity = velocity.add(new Vector2f(-dx, -dy));
 			}
 		}
@@ -84,16 +85,21 @@ public class Dot extends Entity {
 	public void checkCollision(int windowWidth, int windowHeight, float delta){
 		if(position.x<0){
 			position.x = 0;
-			velocity = velocity.scale(-1);
+			float jitter = (new Random().nextInt(999)+9000)/10000f;
+			velocity = new Vector2f(-velocity.x*jitter, velocity.y);
 		}else if(position.x>windowWidth){
 			position.x=windowWidth;
-			velocity = velocity.scale(-1);
+			float jitter = (new Random().nextInt(999)+9000)/10000f;
+			velocity = new Vector2f(-velocity.x*jitter, velocity.y);
 		}else if(position.y<0){
 			position.y = 0;
-			velocity = velocity.scale(-1);
+			float jitter = (new Random().nextInt(999)+9000)/10000f;
+			velocity = new Vector2f(velocity.x, -velocity.y*jitter);
 		}else if(position.y>windowHeight){
 			position.y=windowHeight;
-			velocity = velocity.scale(-1);
+			float jitter = (new Random().nextInt(199)+800)/1000f;
+			velocity = new Vector2f(velocity.x, -velocity.y*jitter);
+			
 		}
 	}
 	
