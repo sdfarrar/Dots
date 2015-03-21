@@ -17,10 +17,6 @@ import graphics.opengl.ShaderProgram;
 
 public class Dot extends Entity {
 	
-	private Shader vertexShader;
-	private Shader fragmentShader;
-	private ShaderProgram program;
-	
 	private Vector2f velocity;
 	private final Vector2f originalPosition;
 
@@ -33,15 +29,7 @@ public class Dot extends Entity {
 	
 	@Override
 	public void init() {
-//		vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "res/test_vertex.glsl");
-//        fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "res/test_fragment.glsl");
-//
-//        program = new ShaderProgram();
-//        program.attachShader(vertexShader);
-//        program.attachShader(fragmentShader);
-//        program.bindFragmentDataLocation(0, "fragColor");
-        //program.link();
-        //program.use();
+		
 	}
 
 	@Override
@@ -52,14 +40,13 @@ public class Dot extends Entity {
 	public void update(float delta) {
 		previousPosition = position;
 		position = position.add(velocity);
-		//System.out.println(delta);
+		
+		velocity = velocity.subtract(velocity.scale(delta));		
 	}
 
 	@Override
 	public void dispose() {
-//		vertexShader.delete();
-//		fragmentShader.delete();
-//		program.delete();
+
 	}
 
 	@Override
@@ -67,9 +54,7 @@ public class Dot extends Entity {
 		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 		float x = interpolatedPosition.x;
 		float y = interpolatedPosition.y;
-//		x = position.x;
-//		y = position.y;
-		renderer.drawSquare(program, x, y, width, height, color);
+		renderer.drawSquare(x, y, width, height, color);
 	}
 
 	/**
@@ -96,7 +81,7 @@ public class Dot extends Entity {
 	 * @param windowWidth window width
 	 * @param windowHeight window height
 	 */
-	public void checkCollision(int windowWidth, int windowHeight){
+	public void checkCollision(int windowWidth, int windowHeight, float delta){
 		if(position.x<0){
 			position.x = 0;
 			velocity = velocity.scale(-1);

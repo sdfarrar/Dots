@@ -78,7 +78,7 @@ public class DotsGame extends VariableTimestepGame {
 			dots.forEach((dot) -> {
 				dot.update(delta);
 				dot.collidesWith(mouse);
-				dot.checkCollision(gameWidth, gameHeight);
+				dot.checkCollision(gameWidth, gameHeight, delta);
 			});		
 		}
 	}

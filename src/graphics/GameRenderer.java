@@ -338,7 +338,7 @@ public class GameRenderer {
         program.pointVertexAttribute(colAttrib, 3, 5 * Float.BYTES, 2 * Float.BYTES);
     }
     
-	public void drawCircle(ShaderProgram program, float x, float y, float width, Color color) {
+	public void drawCircle(float x, float y, float width, Color color) {
 		float increment = 0.075f;
 //		int verticesToAdd = (int) (Math.round((2*Math.PI)/increment)*5);
 //		if(vertices.remaining()<verticesToAdd)
@@ -373,11 +373,9 @@ public class GameRenderer {
 		
 		vertices.clear();
 		numVertices = 0;		
-		//drawing = false;		
 	}
 	
-	public void drawSquare(ShaderProgram program, float x, float y, float width, float height, Color color){
-		//drawing = true;
+	public void drawSquare(float x, float y, float width, float height, Color color){
 		if(vertices.remaining() < 6*5){
 			flush();
 		}
