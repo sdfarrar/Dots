@@ -70,8 +70,9 @@ public class Dot extends Entity {
 			float y = position.y;
 			float radius = mouse.getWidth();
 			if(Math.pow((x - center_x),2) + Math.pow((y - center_y),2) <= Math.pow(radius,2)){
-				float dx = mouse.getDx()*0.25f;
-				float dy = mouse.getDy()*0.25f;
+				float distance = position.distance(new Vector2f(center_x, center_y));
+				float dx = mouse.getDx()/distance*1.75f;
+				float dy = mouse.getDy()/distance*1.75f;
 				velocity = velocity.add(new Vector2f(-dx, -dy));
 			}
 		}

@@ -96,8 +96,6 @@ public class Mouse extends Entity{
 	public void update(float delta) {
 		if(moved){
 			deltaPosition = previousPosition.subtract(position);
-			deltaPosition = new Vector2f(previousPosition.x-position.x, previousPosition.y-position.y);
-			System.out.println(deltaPosition);
 			moved = false;
 		}else{
 			deltaPosition = new Vector2f();
