@@ -1,9 +1,6 @@
 package game.core;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
-import static org.lwjgl.glfw.GLFW.glfwGetKey;
+import static org.lwjgl.glfw.GLFW.*;
 import game.entity.Dot;
 import game.entity.Mouse;
 
@@ -13,28 +10,58 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFW.*;
 
 public class DotsGame extends VariableTimestepGame {
 	private Mouse mouse;
 	private List<Dot> dots;
 	private int gameWidth, gameHeight;
 	
+	private GLFWKeyCallback keycallback;
+	
 	private boolean reset;
+	private boolean freeze;
 	
 	public DotsGame(){
 		super();
 		dots = new ArrayList<Dot>();
 		reset = false;
+		freeze = false;
+	}
+	
+	public void init(){
+		super.init();
+		
+		long id = glfwGetCurrentContext();
+		glfwSetKeyCallback(id, keycallback = new GLFWKeyCallback(){
+			@Override
+			public void invoke(long id, int key, int scancode, int action, int mods) {
+				if(key==GLFW_KEY_R && action==GLFW_PRESS){
+					reset = true;
+				}
+				if(key==GLFW_KEY_F && action==GLFW_PRESS){
+					freeze = !freeze;
+				}
+				if(key==GLFW_KEY_ESCAPE){					
+					window.close(id);
+				}
+			}
+		});
 	}
 	
 	@Override
 	public void input() {
 		mouse.input();
 		
-		long window = glfwGetCurrentContext();
-		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
-			reset = true;
-		}
+//		long window = glfwGetCurrentContext();
+//		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
+//			reset = true;
+//		}
+//		if(glfwGetKey(window, GLFW_KEY_F)==GLFW_PRESS){
+//			freeze = !freeze;
+//			System.out.println("F pressed");
+//		}
 	}
 
 	@Override
@@ -45,7 +72,7 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void initGameObjects() {
-		mouse = new Mouse(0, 0, 25);
+		mouse = new Mouse(0, 0, 50);
 		mouse.init();
 		
 		long id = GLFW.glfwGetCurrentContext();
@@ -76,7 +103,9 @@ public class DotsGame extends VariableTimestepGame {
 			reset = false;
 		}else{
 			dots.forEach((dot) -> {
-				dot.update(delta);
+				if(!freeze){
+					dot.update(delta);
+				}
 				dot.collidesWith(mouse);
 				dot.checkCollision(gameWidth, gameHeight, delta);
 			});		
@@ -91,6 +120,7 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void disposeGameObjects() {
+		keycallback.release();
 		mouse.dispose();
 	}
 	
