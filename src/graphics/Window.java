@@ -39,8 +39,6 @@ import org.lwjgl.opengl.GLContext;
 public class Window {
 	private final long handle;
 	private boolean vsync;
-	
-    private final GLFWKeyCallback keyCallback;
 
     public Window(int width, int height, CharSequence title, boolean vsync) {
         this.vsync = vsync;
@@ -75,16 +73,10 @@ public class Window {
             glfwSwapInterval(1);
         }
 
-        // Set callbacks
-        glfwSetKeyCallback(handle, keyCallback = new GLFWKeyCallback() {
-            @Override
-            public void invoke(long window, int key, int scancode, int action, int mods) {
-                if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-                    glfwSetWindowShouldClose(window, GL_TRUE);
-                }
-            }
-        });
-
+    }
+    
+    public void close(long handle){
+    	glfwSetWindowShouldClose(handle, GL_TRUE);
     }
 
     public boolean isClosing() {
@@ -102,7 +94,6 @@ public class Window {
 
     public void destroy() {
         glfwDestroyWindow(handle);
-        keyCallback.release();
     }
 
     public void setVSync(boolean vsync) {
