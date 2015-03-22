@@ -157,6 +157,10 @@ public class Vector2f {
     public Vector2f lerp(Vector2f other, float alpha) {
         return this.scale(1f - alpha).add(other.scale(alpha));
     }
+    
+    public float distance(Vector2f other){
+    	return (float) Math.sqrt(Math.pow(this.x-other.x, 2) + Math.pow(this.y-other.y,2));
+    }
 
     /**
      * Returns the Buffer representation of this vector.
