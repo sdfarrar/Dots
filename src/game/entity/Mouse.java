@@ -63,8 +63,6 @@ public class Mouse extends Entity{
         		position.x=(float)xpos;
         		position.y=(float) (height-ypos); // should invert y axis for cursor on the screen
 
-        		//deltaPosition = previousPosition.subtract(position);
-
         		moved=true;
         	}
         });
