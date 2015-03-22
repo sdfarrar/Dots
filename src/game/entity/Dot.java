@@ -17,7 +17,7 @@ import graphics.opengl.Shader;
 import graphics.opengl.ShaderProgram;
 
 public class Dot extends Entity {
-	
+
 	private Vector2f velocity;
 	private final Vector2f originalPosition;
 
@@ -27,22 +27,22 @@ public class Dot extends Entity {
 		velocity = new Vector2f();
 		originalPosition = new Vector2f(x,y);
 	}
-	
+
 	@Override
 	public void init() {
-		
+
 	}
 
 	@Override
 	public void input() {
-		
+
 	}
 
 	public void update(float delta) {
 		previousPosition = position;
 		position = position.add(velocity);
-		
-		velocity = velocity.subtract(velocity.scale(delta));		
+
+		velocity = velocity.subtract(velocity.scale(delta));
 	}
 
 	@Override
@@ -77,33 +77,48 @@ public class Dot extends Entity {
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks for collision with the edge of the window
 	 * @param windowWidth window width
 	 * @param windowHeight window height
 	 */
-	public void checkCollision(int windowWidth, int windowHeight, float delta){
+	public void checkCollision(int windowWidth, int windowHeight, float delta, boolean wrap){
 		if(position.x<0){
-			position.x = 0;
-			float jitter = (new Random().nextInt(999)+9000)/10000f;
-			velocity = new Vector2f(-velocity.x*jitter, velocity.y);
+			if(wrap){
+				position.x = windowWidth;
+			}else{
+				position.x = 0;
+				float jitter = (new Random().nextInt(999)+9000)/10000f;
+				velocity = new Vector2f(-velocity.x*jitter, velocity.y);
+			}
 		}else if(position.x>windowWidth){
-			position.x=windowWidth;
-			float jitter = (new Random().nextInt(999)+9000)/10000f;
-			velocity = new Vector2f(-velocity.x*jitter, velocity.y);
+			if(wrap){
+				position.x = 0;
+			}else{
+				position.x=windowWidth;
+				float jitter = (new Random().nextInt(999)+9000)/10000f;
+				velocity = new Vector2f(-velocity.x*jitter, velocity.y);
+			}
 		}else if(position.y<0){
-			position.y = 0;
-			float jitter = (new Random().nextInt(999)+9000)/10000f;
-			velocity = new Vector2f(velocity.x, -velocity.y*jitter);
+			if(wrap){
+				position.y = windowHeight;
+			}else{
+				position.y = 0;
+				float jitter = (new Random().nextInt(999)+9000)/10000f;
+				velocity = new Vector2f(velocity.x, -velocity.y*jitter);
+			}
 		}else if(position.y>windowHeight){
-			position.y=windowHeight;
-			float jitter = (new Random().nextInt(199)+800)/1000f;
-			velocity = new Vector2f(velocity.x, -velocity.y*jitter);
-			
+			if(wrap){
+				position.y = 0;
+			}else{
+				position.y=windowHeight;
+				float jitter = (new Random().nextInt(199)+800)/1000f;
+				velocity = new Vector2f(velocity.x, -velocity.y*jitter);
+			}
 		}
 	}
-	
+
 	public void reset(){
 		position = originalPosition;
 		velocity = new Vector2f();

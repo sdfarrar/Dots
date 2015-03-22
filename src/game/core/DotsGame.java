@@ -22,12 +22,16 @@ public class DotsGame extends VariableTimestepGame {
 	
 	private boolean reset;
 	private boolean freeze;
+	private boolean heatmap;
+	private boolean wrap;
 	
 	public DotsGame(){
 		super();
 		dots = new ArrayList<Dot>();
 		reset = false;
 		freeze = false;
+		heatmap = false;
+		wrap = false;
 	}
 	
 	public void init(){
@@ -43,6 +47,12 @@ public class DotsGame extends VariableTimestepGame {
 				if(key==GLFW_KEY_F && action==GLFW_PRESS){
 					freeze = !freeze;
 				}
+				if(key==GLFW_KEY_H && action==GLFW_PRESS){
+					heatmap = !heatmap;
+				}
+				if(key==GLFW_KEY_W && action==GLFW_PRESS){
+					wrap = !wrap;
+				}
 				if(key==GLFW_KEY_ESCAPE){					
 					window.close(id);
 				}
@@ -54,14 +64,6 @@ public class DotsGame extends VariableTimestepGame {
 	public void input() {
 		mouse.input();
 		
-//		long window = glfwGetCurrentContext();
-//		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
-//			reset = true;
-//		}
-//		if(glfwGetKey(window, GLFW_KEY_F)==GLFW_PRESS){
-//			freeze = !freeze;
-//			System.out.println("F pressed");
-//		}
 	}
 
 	@Override
@@ -87,11 +89,6 @@ public class DotsGame extends VariableTimestepGame {
         		dots.add(new Dot(i, j, 1, 1));
         	}
         }
-//        for(float i=(gameWidth/2)-50; i<(gameWidth/2)+50; i+=2){
-//        	for(float j=(gameHeight/2)-50; j<(gameHeight/2)+50; j+=2){
-//        		dots.add(new Dot(i, j, 1, 1));
-//            }
-//        }
 	}
 
 	@Override
@@ -107,7 +104,7 @@ public class DotsGame extends VariableTimestepGame {
 					dot.update(delta);
 				}
 				dot.collidesWith(mouse);
-				dot.checkCollision(gameWidth, gameHeight, delta);
+				dot.checkCollision(gameWidth, gameHeight, delta, wrap);
 			});		
 		}
 	}
