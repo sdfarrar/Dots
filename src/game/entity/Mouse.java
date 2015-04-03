@@ -27,15 +27,17 @@ public class Mouse extends Entity{
 	public Mouse(float x, float y, float radius) {
 		super(x, y, radius, radius);
 		moved = false;
+		
 		long id = GLFW.glfwGetCurrentContext();
-		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
-        IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
-        GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
-        int height = heightBuffer.get();
-        //int width = widthBuffer.get();
         glfwSetCursorPosCallback(id, mousePosCallback = new GLFWCursorPosCallback(){
         	@Override
         	public void invoke(long window, double xpos, double ypos) {
+        		long id = GLFW.glfwGetCurrentContext();
+        		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
+                IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+                GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
+                int height = heightBuffer.get();
+                
         		previousPosition = new Vector2f(position.x, position.y);
         		position.x=(float)xpos;
         		position.y=(float) (height-ypos); // should invert y axis for cursor on the screen
