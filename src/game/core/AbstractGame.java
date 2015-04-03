@@ -1,23 +1,17 @@
 package game.core;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
+import graphics.GameRenderer;
+import graphics.Window;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
-
-import game.entity.Dot;
-import game.entity.Mouse;
-import graphics.GameRenderer;
-import graphics.Window;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL11.glClear;
 
 public abstract class AbstractGame {
 	public static final int TARGET_FPS = 120;

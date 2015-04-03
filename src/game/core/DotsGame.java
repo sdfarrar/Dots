@@ -1,7 +1,17 @@
 package game.core;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import game.entity.Dot;
+import game.entity.GravityWell;
 import game.entity.Mouse;
 
 import java.nio.IntBuffer;
@@ -11,14 +21,16 @@ import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 public class DotsGame extends VariableTimestepGame {
 	private Mouse mouse;
 	private List<Dot> dots;
+	private List<GravityWell> wells;
 	private int gameWidth, gameHeight;
 	
 	private GLFWKeyCallback keycallback;
+	private GLFWMouseButtonCallback mousebuttoncallback;
 	
 	private boolean reset;
 	private boolean freeze;
@@ -28,6 +40,7 @@ public class DotsGame extends VariableTimestepGame {
 	public DotsGame(){
 		super();
 		dots = new ArrayList<Dot>();
+		wells = new ArrayList<GravityWell>();
 		reset = false;
 		freeze = false;
 		heatmap = false;
@@ -58,12 +71,21 @@ public class DotsGame extends VariableTimestepGame {
 				}
 			}
 		});
+		
+		glfwSetMouseButtonCallback(id, mousebuttoncallback = new GLFWMouseButtonCallback(){
+			@Override
+			public void invoke(long window, int button, int action, int mods) {
+				if(button==GLFW_MOUSE_BUTTON_2 && action==GLFW_PRESS){
+					wells.add(new GravityWell(mouse.getX(), mouse.getY(), mouse.getWidth()));
+				}
+			}
+			
+		});
 	}
 	
 	@Override
 	public void input() {
 		mouse.input();
-		
 	}
 
 	@Override
@@ -97,6 +119,7 @@ public class DotsGame extends VariableTimestepGame {
 		
 		if(reset){
 			dots.forEach((dot) -> dot.reset());
+			wells.clear();
 			reset = false;
 		}else{
 			dots.forEach((dot) -> {
@@ -105,6 +128,12 @@ public class DotsGame extends VariableTimestepGame {
 				}
 				dot.collidesWith(mouse);
 				dot.checkCollision(gameWidth, gameHeight, delta, wrap);
+				
+				if(!freeze){
+					wells.forEach((well) -> {
+						dot.influencedBy(well);
+					});
+				}
 			});		
 		}
 	}
@@ -112,12 +141,14 @@ public class DotsGame extends VariableTimestepGame {
 	@Override
 	public void renderGameObjects(float alpha) {
 		dots.forEach((dot) -> dot.render(renderer, alpha));
+		wells.forEach((well) -> well.render(renderer, alpha));
 		mouse.render(renderer, alpha);
 	}
 
 	@Override
 	public void disposeGameObjects() {
 		keycallback.release();
+		mousebuttoncallback.release();
 		mouse.dispose();
 	}
 	

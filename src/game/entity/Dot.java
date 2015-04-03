@@ -1,20 +1,11 @@
 package game.entity;
 
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.glfw.GLFW.*;
+import graphics.GameRenderer;
 
 import java.awt.Color;
 import java.util.Random;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWKeyCallback;
-
 import math.Vector2f;
-import graphics.GameRenderer;
-import graphics.opengl.Shader;
-import graphics.opengl.ShaderProgram;
 
 public class Dot extends Entity {
 
@@ -77,6 +68,19 @@ public class Dot extends Entity {
 			}
 		}
 	}
+	
+	public void influencedBy(GravityWell well) {
+		float center_x = well.getX();
+		float center_y = well.getY();
+		float x = position.x;
+		float y = position.y;
+		float radius = well.getWidth();		
+		if(Math.pow((x - center_x),2) + Math.pow((y - center_y),2) <= Math.pow(radius,2)){
+			float dx = (x-center_x)/750f;
+			float dy = (y-center_y)/750f;
+			velocity = velocity.add(new Vector2f(-dx, -dy));
+		}	
+	}
 
 	/**
 	 * Checks for collision with the edge of the window
@@ -123,4 +127,6 @@ public class Dot extends Entity {
 		position = originalPosition;
 		velocity = new Vector2f();
 	}
+
+	
 }
