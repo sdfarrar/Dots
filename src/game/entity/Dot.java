@@ -46,7 +46,15 @@ public class Dot extends Entity {
 		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 		float x = interpolatedPosition.x;
 		float y = interpolatedPosition.y;
-		renderer.drawSquare(x, y, width, height, color);
+		float endX = x+1;
+		float endY = y+1;
+		float length = velocity.length();
+		length = (length<1) ? 1 : length;
+
+		double radians = Math.atan2(velocity.y, velocity.x);
+		endX = (float) (length*Math.cos(radians) + x);
+		endY = (float) (length*Math.sin(radians) + y);
+		renderer.drawLine(x, y, endX, endY, color);
 	}
 
 	/**
@@ -69,15 +77,26 @@ public class Dot extends Entity {
 		}
 	}
 	
-	public void influencedBy(GravityWell well) {
+	public void influencedBy(GravityWell well, int gravityType) {
 		float center_x = well.getX();
 		float center_y = well.getY();
 		float x = position.x;
 		float y = position.y;
 		float radius = well.getWidth();		
 		if(Math.pow((x - center_x),2) + Math.pow((y - center_y),2) <= Math.pow(radius,2)){
-			float dx = (x-center_x)/750f;
-			float dy = (y-center_y)/750f;
+			float dx=0f,dy=0f;
+			float distance = position.distance(new Vector2f(center_x, center_y));
+			switch(gravityType){
+			case 0:
+				dx = (x-center_x)/750f;
+				dy = (y-center_y)/750f;
+				break;
+			case 1:
+				dx = (x-center_x)/distance*0.25f;
+				dy = (y-center_y)/distance*0.25f;
+				break;
+			}
+			
 			velocity = velocity.add(new Vector2f(-dx, -dy));
 		}	
 	}
