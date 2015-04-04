@@ -46,7 +46,15 @@ public class Dot extends Entity {
 		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 		float x = interpolatedPosition.x;
 		float y = interpolatedPosition.y;
-		renderer.drawSquare(x, y, width, height, color);
+		float endX = x+1;
+		float endY = y+1;
+		float length = velocity.length();
+		length = (length<1) ? 1 : length;
+
+		double radians = Math.atan2(velocity.y, velocity.x);
+		endX = (float) (length*Math.cos(radians) + x);
+		endY = (float) (length*Math.sin(radians) + y);
+		renderer.drawLine(x, y, endX, endY, color);
 	}
 
 	/**
