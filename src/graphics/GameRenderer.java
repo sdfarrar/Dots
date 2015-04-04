@@ -33,6 +33,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 public class GameRenderer {
+	private static final int BUFFER_SIZE = 4096;
+	
 	private VertexArrayObject vao;
     private VertexBufferObject vbo;
     private Shader vertexShader;
@@ -41,6 +43,9 @@ public class GameRenderer {
 
     private FloatBuffer vertices;
     private int numVertices;
+    
+    private FloatBuffer lineVertices;
+    private int numLineVertices;
     private boolean drawing;
 
     /**
@@ -50,6 +55,7 @@ public class GameRenderer {
      */
     public void init() {
     	numVertices = 0;
+    	numLineVertices = 0;
         drawing = false;
         
         // create our vertex array object
@@ -61,10 +67,11 @@ public class GameRenderer {
         vbo.bind(GL_ARRAY_BUFFER);
 
         // create our buffer of vertices to draw with
-        vertices = BufferUtils.createFloatBuffer(4096);
+        vertices = BufferUtils.createFloatBuffer(BUFFER_SIZE);
+        lineVertices = BufferUtils.createFloatBuffer(BUFFER_SIZE);
 
         // allocate storage for the vbo by sending null data to the gpu
-        long size = vertices.capacity() * Float.BYTES;
+        long size = BUFFER_SIZE * Float.BYTES;
         vbo.uploadData(GL_ARRAY_BUFFER, size, GL_STREAM_DRAW);
 
         // load our default shaders
@@ -133,6 +140,7 @@ public class GameRenderer {
         }
         drawing = false;
         flush();
+        flushLines();
     }
 
     /**
@@ -156,6 +164,30 @@ public class GameRenderer {
             /* Clear vertex data for next batch */
             vertices.clear();
             numVertices = 0;
+        }
+    }
+    
+    /**
+     * Flushes line data to the GPU to be rendered
+     */
+    public void flushLines(){
+    	if (numLineVertices > 0) {
+            lineVertices.flip();
+
+            vao.bind();
+
+            program.use();
+
+            /* Upload the new vertex data */
+            vbo.bind(GL_ARRAY_BUFFER);
+            vbo.uploadSubData(GL_ARRAY_BUFFER, 0, lineVertices);
+
+            /* Draw batch */
+            glDrawArrays(GL_LINES, 0, numLineVertices);
+
+            /* Clear vertex data for next batch */
+            lineVertices.clear();
+            numLineVertices = 0;
         }
     }
 
@@ -281,9 +313,6 @@ public class GameRenderer {
         float g = c.getGreen() / 255f;
         float b = c.getBlue() / 255f;
 
-        System.out.println("x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2);
-        System.out.println("rgb: " + r + " " + g + " " + b);
-        
         vertices.put(x1).put(y1).put(r).put(g).put(b).put(s1).put(t1);
         vertices.put(x1).put(y2).put(r).put(g).put(b).put(s1).put(t2);
         vertices.put(x2).put(y2).put(r).put(g).put(b).put(s2).put(t2);
@@ -339,34 +368,20 @@ public class GameRenderer {
         program.pointVertexAttribute(colAttrib, 3, 5 * Float.BYTES, 2 * Float.BYTES);
     }
 	
-	public void drawLines(float x, float y, float width, Color color){
-		if(numVertices>0)
-			flush();		
+	public void drawLine(float x1, float y1, float x2, float y2, Color color){
+		if(lineVertices.remaining()< 2*5)
+			flushLines();
 		
 		float r = color.getRed();
 		float g = color.getGreen();
 		float b = color.getBlue();
 		
-		vertices.put(x).put(y).put(r).put(g).put(b);
-		vertices.put(x+20).put(y+20).put(r).put(g).put(b);
-		numVertices+=2;
-		
-		vertices.flip();
-		
-		vao.bind();
-		program.use();
-		
-		// upload the new vertex data
-		vbo.bind(GL_ARRAY_BUFFER);
-		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
-
-		glDrawArrays(GL_LINES, 0, numVertices);
-		
-		vertices.clear();
-		numVertices = 0;	
+		lineVertices.put(x1).put(y1).put(r).put(g).put(b);
+		lineVertices.put(x2).put(y2).put(r).put(g).put(b);
+		numLineVertices+=2;
 	}
     
-	public void drawCircle(float x, float y, float width, Color color) {
+	public void drawCircle(float cx, float cy, float radius, Color color) {
 		float increment = 0.075f;
 		// Since drawing circles utilizes line loops rather than triangles
 		// clear the buffer if any vertices are a
@@ -379,9 +394,9 @@ public class GameRenderer {
 		float b = color.getBlue();
 		
 		for(float i=0; i<2*Math.PI; i+=increment){
-			float cx = x + (float) (width * Math.cos(i));
-			float cy = y + (float) (width * Math.sin(i));
-			vertices.put(cx).put(cy).put(r).put(g).put(b);
+			float x = cx + (float) (radius * Math.cos(i));
+			float y = cy + (float) (radius * Math.sin(i));
+			vertices.put(x).put(y).put(r).put(g).put(b);
 			numVertices++;
 		}		
 		vertices.flip();
@@ -403,7 +418,6 @@ public class GameRenderer {
 		if(vertices.remaining() < 6*5){
 			flush();
 		}
-
 	
 		float r = color.getRed();
 		float g = color.getGreen();
