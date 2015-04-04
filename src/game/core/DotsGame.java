@@ -148,7 +148,7 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void renderGameObjects(float alpha) {
-		dots.forEach((dot) -> dot.render(renderer, alpha));
+		dots.forEach((dot) -> dot.render(renderer, alpha, freeze));
 		wells.forEach((well) -> well.render(renderer, alpha));
 		mouse.render(renderer, alpha);
 	}
