@@ -61,12 +61,8 @@ public class Mouse extends Entity{
 		}else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
 			if(width>15){
 				width = height -= 2.5;
-			}else{
-				System.out.println("Minimum radius of " + width + " reached.");
 			}
-		}
-		
-		
+		}		
 	}
 
 	@Override

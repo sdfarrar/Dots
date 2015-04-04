@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -337,13 +338,36 @@ public class GameRenderer {
         program.enableVertexAttribute(colAttrib);
         program.pointVertexAttribute(colAttrib, 3, 5 * Float.BYTES, 2 * Float.BYTES);
     }
+	
+	public void drawLines(float x, float y, float width, Color color){
+		if(numVertices>0)
+			flush();		
+		
+		float r = color.getRed();
+		float g = color.getGreen();
+		float b = color.getBlue();
+		
+		vertices.put(x).put(y).put(r).put(g).put(b);
+		vertices.put(x+20).put(y+20).put(r).put(g).put(b);
+		numVertices+=2;
+		
+		vertices.flip();
+		
+		vao.bind();
+		program.use();
+		
+		// upload the new vertex data
+		vbo.bind(GL_ARRAY_BUFFER);
+		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
+
+		glDrawArrays(GL_LINES, 0, numVertices);
+		
+		vertices.clear();
+		numVertices = 0;	
+	}
     
 	public void drawCircle(float x, float y, float width, Color color) {
 		float increment = 0.075f;
-//		int verticesToAdd = (int) (Math.round((2*Math.PI)/increment)*5);
-//		if(vertices.remaining()<verticesToAdd)
-		//System.out.println(verticesToAdd);
-		
 		// Since drawing circles utilizes line loops rather than triangles
 		// clear the buffer if any vertices are a
 		if(numVertices>0)
@@ -399,21 +423,5 @@ public class GameRenderer {
 		vertices.put(br.x).put(br.y).put(r).put(g).put(b);
 		
 		numVertices += 6;
-		
-//		vertices.flip();
-//		
-//		//texture.bind();
-//		vao.bind();
-//		program.use();
-//		
-//		// upload the new vertex data
-//		vbo.bind(GL_ARRAY_BUFFER);
-//		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
-//		
-//		glDrawArrays(GL_TRIANGLES, 0, 6);
-		
-		//vertices.clear();
-		//numVertices = 0;		
-		//drawing = false;
 	}
 }

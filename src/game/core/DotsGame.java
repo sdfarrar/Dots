@@ -2,9 +2,11 @@ package game.core;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_G;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+import static org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
@@ -37,6 +39,8 @@ public class DotsGame extends VariableTimestepGame {
 	private boolean heatmap;
 	private boolean wrap;
 	
+	private int gravityType;
+	
 	public DotsGame(){
 		super();
 		dots = new ArrayList<Dot>();
@@ -45,6 +49,7 @@ public class DotsGame extends VariableTimestepGame {
 		freeze = false;
 		heatmap = false;
 		wrap = false;
+		gravityType = 0;
 	}
 	
 	public void init(){
@@ -65,6 +70,9 @@ public class DotsGame extends VariableTimestepGame {
 				}
 				if(key==GLFW_KEY_W && action==GLFW_PRESS){
 					wrap = !wrap;
+				}
+				if(key==GLFW_KEY_G && action==GLFW_PRESS && mods==GLFW_MOD_SHIFT){
+					gravityType = (gravityType==0) ? 1 : 0;
 				}
 				if(key==GLFW_KEY_ESCAPE){					
 					window.close(id);
@@ -131,7 +139,7 @@ public class DotsGame extends VariableTimestepGame {
 				
 				if(!freeze){
 					wells.forEach((well) -> {
-						dot.influencedBy(well);
+						dot.influencedBy(well, gravityType);
 					});
 				}
 			});		

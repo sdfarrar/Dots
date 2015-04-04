@@ -69,15 +69,26 @@ public class Dot extends Entity {
 		}
 	}
 	
-	public void influencedBy(GravityWell well) {
+	public void influencedBy(GravityWell well, int gravityType) {
 		float center_x = well.getX();
 		float center_y = well.getY();
 		float x = position.x;
 		float y = position.y;
 		float radius = well.getWidth();		
 		if(Math.pow((x - center_x),2) + Math.pow((y - center_y),2) <= Math.pow(radius,2)){
-			float dx = (x-center_x)/750f;
-			float dy = (y-center_y)/750f;
+			float dx=0f,dy=0f;
+			float distance = position.distance(new Vector2f(center_x, center_y));
+			switch(gravityType){
+			case 0:
+				dx = (x-center_x)/750f;
+				dy = (y-center_y)/750f;
+				break;
+			case 1:
+				dx = (x-center_x)/distance*0.25f;
+				dy = (y-center_y)/distance*0.25f;
+				break;
+			}
+			
 			velocity = velocity.add(new Vector2f(-dx, -dy));
 		}	
 	}
