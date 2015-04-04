@@ -98,8 +98,8 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void renderText() {
-//      int height = renderer.getDebugTextHeight("Context");
-//      renderer.drawDebugText("FPS: " + timer.getFPS() + " | UPS: " + timer.getUPS(), 5, 5 + height);
+      //int height = textRenderer.getTextHeight("Test");
+      textRenderer.drawText("Test", 200, 100);
 	}
 
 	@Override
