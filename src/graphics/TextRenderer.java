@@ -121,7 +121,7 @@ public class TextRenderer {
             Logger.getLogger(GameRenderer.class.getName()).log(Level.CONFIG, null, ex);
             font = new Font();
         }
-		debugFont = new Font(16);
+		debugFont = new Font(new java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 16), true);
     }
     
     /**
