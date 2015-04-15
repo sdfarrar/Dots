@@ -40,20 +40,25 @@ public class Dot extends Entity {
 	public void dispose() {
 
 	}
-
+	
 	@Override
 	public void render(GameRenderer renderer, float alpha) {
+		render(renderer, alpha, false);		
+	}
+	
+	public void render(GameRenderer renderer, float alpha, boolean frozen) {
 		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 		float x = interpolatedPosition.x;
 		float y = interpolatedPosition.y;
 		float endX = x+1;
 		float endY = y+1;
-		float length = velocity.length();
-		length = (length<1) ? 1 : length;
-
-		double radians = Math.atan2(velocity.y, velocity.x);
-		endX = (float) (length*Math.cos(radians) + x);
-		endY = (float) (length*Math.sin(radians) + y);
+		if(!frozen){
+			float length = velocity.length();
+			length = (length<1) ? 1 : length;
+			double radians = Math.atan2(velocity.y, velocity.x);
+			endX = (float) (length*Math.cos(radians) + x);
+			endY = (float) (length*Math.sin(radians) + y);
+		}
 		renderer.drawLine(x, y, endX, endY, color);
 	}
 
@@ -146,6 +151,5 @@ public class Dot extends Entity {
 		position = originalPosition;
 		velocity = new Vector2f();
 	}
-
 	
 }

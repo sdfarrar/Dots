@@ -5,6 +5,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import graphics.GameRenderer;
+import graphics.TextRenderer;
 import graphics.Window;
 
 import java.util.logging.Level;
@@ -20,6 +21,7 @@ public abstract class AbstractGame {
 	protected Timer timer;
 	protected Window window;
 	protected GameRenderer renderer;
+	protected TextRenderer textRenderer;
 	protected boolean running;
 	
 	private GLFWErrorCallback errorCallback;
@@ -28,7 +30,8 @@ public abstract class AbstractGame {
 	
 	public AbstractGame(){
 		timer = new Timer();
-		renderer = new GameRenderer();		
+		renderer = new GameRenderer();	
+		textRenderer = new TextRenderer();
 	}
 	
 	public void start(){
@@ -49,6 +52,7 @@ public abstract class AbstractGame {
 		window = new Window(1024, 768, "Dots", false);
 		timer.init();
 		renderer.init();
+		textRenderer.init();
 
 		initGameObjects();
 		
@@ -85,6 +89,7 @@ public abstract class AbstractGame {
 	public void dispose(){
 		window.destroy();
 		renderer.dispose();
+		textRenderer.dispose();
 		disposeGameObjects();
 		glfwTerminate();
 		errorCallback.release();
