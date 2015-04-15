@@ -1,6 +1,6 @@
 package game.core;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_G;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
@@ -30,17 +30,20 @@ public class DotsGame extends VariableTimestepGame {
 	private List<Dot> dots;
 	private List<GravityWell> wells;
 	private int gameWidth, gameHeight;
-	
+
 	private GLFWKeyCallback keycallback;
 	private GLFWMouseButtonCallback mousebuttoncallback;
-	
+
 	private boolean reset;
 	private boolean freeze;
 	private boolean heatmap;
 	private boolean wrap;
 	
+	private boolean showUI;
+	private boolean showStats;
+
 	private int gravityType;
-	
+
 	public DotsGame(){
 		super();
 		dots = new ArrayList<Dot>();
@@ -49,12 +52,14 @@ public class DotsGame extends VariableTimestepGame {
 		freeze = false;
 		heatmap = false;
 		wrap = false;
+		showUI = true;
+		showStats = false;
 		gravityType = 0;
 	}
-	
+
 	public void init(){
 		super.init();
-		
+
 		long id = glfwGetCurrentContext();
 		glfwSetKeyCallback(id, keycallback = new GLFWKeyCallback(){
 			@Override
@@ -71,15 +76,21 @@ public class DotsGame extends VariableTimestepGame {
 				if(key==GLFW_KEY_W && action==GLFW_PRESS){
 					wrap = !wrap;
 				}
-				if(key==GLFW_KEY_G && action==GLFW_PRESS && mods==GLFW_MOD_SHIFT){
+				if(key==GLFW_KEY_G && action==GLFW_PRESS){ // && mods==GLFW_MOD_SHIFT
 					gravityType = (gravityType==0) ? 1 : 0;
+				}
+				if(key==GLFW_KEY_SPACE && action==GLFW_PRESS){
+					showUI = !showUI;
+				}
+				if(key==GLFW_KEY_S && action==GLFW_PRESS){
+					showStats = !showStats;
 				}
 				if(key==GLFW_KEY_ESCAPE){					
 					window.close(id);
 				}
 			}
 		});
-		
+
 		glfwSetMouseButtonCallback(id, mousebuttoncallback = new GLFWMouseButtonCallback(){
 			@Override
 			public void invoke(long window, int button, int action, int mods) {
@@ -87,10 +98,10 @@ public class DotsGame extends VariableTimestepGame {
 					wells.add(new GravityWell(mouse.getX(), mouse.getY(), mouse.getWidth()));
 				}
 			}
-			
+
 		});
 	}
-	
+
 	@Override
 	public void input() {
 		mouse.input();
@@ -98,33 +109,49 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void renderText() {
-//      int height = renderer.getDebugTextHeight("Context");
-//      renderer.drawDebugText("FPS: " + timer.getFPS() + " | UPS: " + timer.getUPS(), 5, 5 + height);
+		int x = 10;
+		int y = 750;
+		int height = textRenderer.getTextHeight("D");		
+		int vSpace = 2;
+		textRenderer.drawDebugText("(Space)Show UI", x, y);
+		
+		if(showUI){
+			textRenderer.drawDebugText("(W)Wrap:" + ((wrap) ? "On" : "Off"), x, y - height - vSpace);
+			textRenderer.drawDebugText("(F)Freeze:" + ((freeze) ? "On" : "Off"), x, y - height*2 - vSpace);
+			textRenderer.drawDebugText("(H)Heatmap:" + ((heatmap) ? "On" : "Off"), x, y - height*3 - vSpace);
+			textRenderer.drawDebugText("(G)Gravity Type:" + gravityType, 10, y - height*4 - vSpace);
+			textRenderer.drawDebugText("(S)Show Stats", x, y - height*6 - vSpace);
+			if(showStats){
+				textRenderer.drawDebugText("FPS:" + timer.getFPS(), x, y - height*7 - vSpace);
+				textRenderer.drawDebugText("UPS:" + timer.getUPS(), x, y - height*8 - vSpace);
+				textRenderer.drawDebugText("Dot count:" + dots.size(), 10, y - height*9 - vSpace);
+			}
+		}
 	}
 
 	@Override
 	public void initGameObjects() {
 		mouse = new Mouse(0, 0, 50);
 		mouse.init();
-		
+
 		long id = GLFW.glfwGetCurrentContext();
 		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
-        IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
-        GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
-        gameHeight = heightBuffer.get();
-        gameWidth = widthBuffer.get();
-        
-        for(float i=1; i<gameWidth; i+=4){
-        	for(float j=1; j<gameHeight; j+=4){
-        		dots.add(new Dot(i, j, 1, 1));
-        	}
-        }
+		IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+		GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
+		gameHeight = heightBuffer.get();
+		gameWidth = widthBuffer.get();
+
+		for(float i=1; i<gameWidth; i+=4){
+			for(float j=1; j<gameHeight; j+=4){
+				dots.add(new Dot(i, j, 1, 1));
+			}
+		}
 	}
 
 	@Override
 	public void updateGameObjects(float delta) {
 		mouse.update(delta);
-		
+
 		if(reset){
 			dots.forEach((dot) -> dot.reset());
 			wells.clear();
@@ -136,7 +163,7 @@ public class DotsGame extends VariableTimestepGame {
 				}
 				dot.collidesWith(mouse);
 				dot.checkCollision(gameWidth, gameHeight, delta, wrap);
-				
+
 				if(!freeze){
 					wells.forEach((well) -> {
 						dot.influencedBy(well, gravityType);
@@ -151,6 +178,8 @@ public class DotsGame extends VariableTimestepGame {
 		dots.forEach((dot) -> dot.render(renderer, alpha, freeze));
 		wells.forEach((well) -> well.render(renderer, alpha));
 		mouse.render(renderer, alpha);
+
+
 	}
 
 	@Override
@@ -159,5 +188,5 @@ public class DotsGame extends VariableTimestepGame {
 		mousebuttoncallback.release();
 		mouse.dispose();
 	}
-	
+
 }

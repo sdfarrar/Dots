@@ -3,8 +3,6 @@ package graphics;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -32,14 +30,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import math.Matrix4f;
-import math.Vector2f;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 import text.Font;
 
-public class GameRenderer {
+public class TextRenderer {
 	private static final int BUFFER_SIZE = 4096;
 	
 	private VertexArrayObject vao;
@@ -51,8 +48,6 @@ public class GameRenderer {
     private FloatBuffer vertices;
     private int numVertices;
     
-    private FloatBuffer lineVertices;
-    private int numLineVertices;
     private boolean drawing;
 
     private Font font;
@@ -65,7 +60,6 @@ public class GameRenderer {
      */
     public void init() {
     	numVertices = 0;
-    	numLineVertices = 0;
         drawing = false;
         
         // create our vertex array object
@@ -78,15 +72,14 @@ public class GameRenderer {
 
         // create our buffer of vertices to draw with
         vertices = BufferUtils.createFloatBuffer(BUFFER_SIZE);
-        lineVertices = BufferUtils.createFloatBuffer(BUFFER_SIZE);
 
         // allocate storage for the vbo by sending null data to the gpu
         long size = BUFFER_SIZE * Float.BYTES;
         vbo.uploadData(GL_ARRAY_BUFFER, size, GL_STREAM_DRAW);
 
         // load our default shaders
-        vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "res/test_vertex.glsl");
-        fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "res/test_fragment.glsl");
+        vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "res/default_vertex.glsl");
+        fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "res/default_fragment.glsl");
 
         // create the shader programe
         program = new ShaderProgram();
@@ -128,7 +121,7 @@ public class GameRenderer {
             Logger.getLogger(GameRenderer.class.getName()).log(Level.CONFIG, null, ex);
             font = new Font();
         }
-		debugFont = new Font(16);
+		debugFont = new Font(new java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 16), true);
     }
     
     /**
@@ -162,7 +155,6 @@ public class GameRenderer {
         }
         drawing = true;
         numVertices = 0;
-        numLineVertices = 0;
     }
 
     /**
@@ -174,7 +166,6 @@ public class GameRenderer {
         }
         drawing = false;
         flush();
-        flushLines();
     }
 
     /**
@@ -202,27 +193,89 @@ public class GameRenderer {
     }
     
     /**
-     * Flushes line data to the GPU to be rendered
+     * Calculates total width of a text.
+     *
+     * @param text The text
+     * @return Total width of the text
      */
-    public void flushLines(){
-    	if (numLineVertices > 0) {
-            lineVertices.flip();
+    public int getTextWidth(CharSequence text) {
+        return font.getWidth(text);
+    }
 
-            vao.bind();
+    /**
+     * Calculates total height of a text.
+     *
+     * @param text The text
+     * @return Total width of the text
+     */
+    public int getTextHeight(CharSequence text) {
+        return font.getHeight(text);
+    }
 
-            program.use();
+    /**
+     * Calculates total width of a debug text.
+     *
+     * @param text The text
+     * @return Total width of the text
+     */
+    public int getDebugTextWidth(CharSequence text) {
+        return debugFont.getWidth(text);
+    }
 
-            /* Upload the new vertex data */
-            vbo.bind(GL_ARRAY_BUFFER);
-            vbo.uploadSubData(GL_ARRAY_BUFFER, 0, lineVertices);
+    /**
+     * Calculates total height of a debug text.
+     *
+     * @param text The text
+     * @return Total width of the text
+     */
+    public int getDebugTextHeight(CharSequence text) {
+        return debugFont.getHeight(text);
+    }
 
-            /* Draw batch */
-            glDrawArrays(GL_LINES, 0, numLineVertices);
+    /**
+     * Draw text at the specified position.
+     *
+     * @param text Text to draw
+     * @param x X coordinate of the text position
+     * @param y Y coordinate of the text position
+     */
+    public void drawText(CharSequence text, float x, float y) {
+        font.drawText(this, text, x, y);
+    }
 
-            /* Clear vertex data for next batch */
-            lineVertices.clear();
-            numLineVertices = 0;
-        }
+    /**
+     * Draw debug text at the specified position.
+     *
+     * @param text Text to draw
+     * @param x X coordinate of the text position
+     * @param y Y coordinate of the text position
+     */
+    public void drawDebugText(CharSequence text, float x, float y) {
+        debugFont.drawText(this, text, x, y);
+    }
+
+    /**
+     * Draw text at the specified position and color.
+     *
+     * @param text Text to draw
+     * @param x X coordinate of the text position
+     * @param y Y coordinate of the text position
+     * @param c Color to use
+     */
+    public void drawText(CharSequence text, float x, float y, Color c) {
+        font.drawText(this, text, x, y, c);
+    }
+
+    /**
+     * Draw debug text at the specified position and color.
+     *
+     * @param text Text to draw
+     * @param x X coordinate of the text position
+     * @param y Y coordinate of the text position
+     * @param c Color to use
+     */
+    public void drawDebugText(CharSequence text, float x, float y, Color c) {
+        debugFont.drawText(this, text, x, y, c);
     }
 
     /**
@@ -359,104 +412,22 @@ public class GameRenderer {
     }
 
     // Specifies vertex attributes for position, color, and texture coordinates
-//    private void specifyVertexAttributes() {
-//    	// Specify vertex pointer
-//        int posAttrib = program.getAttributeLocation("position");
-//        program.enableVertexAttribute(posAttrib);
-//        program.pointVertexAttribute(posAttrib, 2, 7 * Float.BYTES, 0);
-//
-//        // Specify color pointer
-//        int colAttrib = program.getAttributeLocation("color");
-//        program.enableVertexAttribute(colAttrib);
-//        program.pointVertexAttribute(colAttrib, 3, 7 * Float.BYTES, 2 * Float.BYTES);
-//
-//        // Specify texture pointer
-//        int texAttrib = program.getAttributeLocation("texcoord");
-//        program.enableVertexAttribute(texAttrib);
-//        program.pointVertexAttribute(texAttrib, 2, 7 * Float.BYTES, 5 * Float.BYTES);
-//    }
-
-    // Specifies vertex attributes for position and color
-	private void specifyVertexAttributes() {
-        /* Specify Vertex Pointer */
+    private void specifyVertexAttributes() {
+    	// Specify vertex pointer
         int posAttrib = program.getAttributeLocation("position");
         program.enableVertexAttribute(posAttrib);
-        program.pointVertexAttribute(posAttrib, 2, 5 * Float.BYTES, 0);
+        program.pointVertexAttribute(posAttrib, 2, 7 * Float.BYTES, 0);
 
-        /* Specify Color Pointer */
+        // Specify color pointer
         int colAttrib = program.getAttributeLocation("color");
         program.enableVertexAttribute(colAttrib);
-        program.pointVertexAttribute(colAttrib, 3, 5 * Float.BYTES, 2 * Float.BYTES);
-    }
-	
-	public void drawLine(float x1, float y1, float x2, float y2, Color color){
-		if(lineVertices.remaining()< 2*5)
-			flushLines();
-		
-		float r = color.getRed();
-		float g = color.getGreen();
-		float b = color.getBlue();
-		
-		lineVertices.put(x1).put(y1).put(r).put(g).put(b);
-		lineVertices.put(x2).put(y2).put(r).put(g).put(b);
-		numLineVertices+=2;
-	}
-    
-	public void drawCircle(float cx, float cy, float radius, Color color) {
-		float increment = 0.075f;
-		// Since drawing circles utilizes line loops rather than triangles
-		// clear the buffer if any vertices are a
-		if(numVertices>0)
-			flush();
-		
-		
-		float r = color.getRed();
-		float g = color.getGreen();
-		float b = color.getBlue();
-		
-		for(float i=0; i<2*Math.PI; i+=increment){
-			float x = cx + (float) (radius * Math.cos(i));
-			float y = cy + (float) (radius * Math.sin(i));
-			vertices.put(x).put(y).put(r).put(g).put(b);
-			numVertices++;
-		}		
-		vertices.flip();
-		
-		vao.bind();
-		program.use();
-		
-		// upload the new vertex data
-		vbo.bind(GL_ARRAY_BUFFER);
-		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
+        program.pointVertexAttribute(colAttrib, 3, 7 * Float.BYTES, 2 * Float.BYTES);
 
-		glDrawArrays(GL_LINE_LOOP, 0, numVertices);
-		
-		vertices.clear();
-		numVertices = 0;		
-	}
+        // Specify texture pointer
+        int texAttrib = program.getAttributeLocation("texcoord");
+        program.enableVertexAttribute(texAttrib);
+        program.pointVertexAttribute(texAttrib, 2, 7 * Float.BYTES, 5 * Float.BYTES);
+    }
+
 	
-	public void drawSquare(float x, float y, float width, float height, Color color){
-		if(vertices.remaining() < 6*5){
-			flush();
-		}
-	
-		float r = color.getRed();
-		float g = color.getGreen();
-		float b = color.getBlue();
-		
-		Vector2f tl = new Vector2f(x-width/2,y+height/2);
-		Vector2f bl = new Vector2f(x-width/2,y-height/2);
-		Vector2f tr = new Vector2f(x+width/2, y+height/2);
-		Vector2f br = new Vector2f(x+width/2, y-height/2);
-		
-		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b);
-		vertices.put(tl.x).put(tl.y).put(r).put(g).put(b);
-		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b);
-		
-		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b);
-		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b);
-		vertices.put(br.x).put(br.y).put(r).put(g).put(b);
-		
-		numVertices += 6;
-	}
 }
