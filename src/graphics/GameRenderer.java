@@ -235,6 +235,13 @@ public class GameRenderer {
     public void drawTexture(Texture texture, float x, float y) {
         drawTexture(texture, x, y, Color.WHITE);
     }
+    
+    public void drawTexture(Texture texture, float x, float y, float width, float height){
+    	float x2 = x+width;
+    	float y2 = y+height;
+    	
+    	drawTextureRegion(x, y, x2, y2, 0, 0, 1, 1);
+    }
 
     /**
      * Draws the currently bound texture on specified coordinates and with
@@ -381,24 +388,29 @@ public class GameRenderer {
         /* Specify Vertex Pointer */
         int posAttrib = program.getAttributeLocation("position");
         program.enableVertexAttribute(posAttrib);
-        program.pointVertexAttribute(posAttrib, 2, 5 * Float.BYTES, 0);
+        program.pointVertexAttribute(posAttrib, 2, 7 * Float.BYTES, 0);
 
         /* Specify Color Pointer */
         int colAttrib = program.getAttributeLocation("color");
         program.enableVertexAttribute(colAttrib);
-        program.pointVertexAttribute(colAttrib, 3, 5 * Float.BYTES, 2 * Float.BYTES);
+        program.pointVertexAttribute(colAttrib, 3, 7 * Float.BYTES, 2 * Float.BYTES);
+        
+        /* Specify Texture Pointer */
+        int texAttrib = program.getAttributeLocation("texcoord");
+        program.enableVertexAttribute(texAttrib);
+        program.pointVertexAttribute(texAttrib, 2, 7 * Float.BYTES, 5 * Float.BYTES);
     }
 	
 	public void drawLine(float x1, float y1, float x2, float y2, Color color){
-		if(lineVertices.remaining()< 2*5)
+		if(lineVertices.remaining()< 2*7)
 			flushLines();
 		
 		float r = color.getRed();
 		float g = color.getGreen();
 		float b = color.getBlue();
 		
-		lineVertices.put(x1).put(y1).put(r).put(g).put(b);
-		lineVertices.put(x2).put(y2).put(r).put(g).put(b);
+		lineVertices.put(x1).put(y1).put(r).put(g).put(b).put(0).put(0);
+		lineVertices.put(x2).put(y2).put(r).put(g).put(b).put(0).put(0);
 		numLineVertices+=2;
 	}
     
@@ -417,7 +429,7 @@ public class GameRenderer {
 		for(float i=0; i<2*Math.PI; i+=increment){
 			float x = cx + (float) (radius * Math.cos(i));
 			float y = cy + (float) (radius * Math.sin(i));
-			vertices.put(x).put(y).put(r).put(g).put(b);
+			vertices.put(x).put(y).put(r).put(g).put(b).put(0).put(0);
 			numVertices++;
 		}		
 		vertices.flip();
@@ -436,7 +448,7 @@ public class GameRenderer {
 	}
 	
 	public void drawSquare(float x, float y, float width, float height, Color color){
-		if(vertices.remaining() < 6*5){
+		if(vertices.remaining() < 6*7){
 			flush();
 		}
 	
@@ -449,13 +461,13 @@ public class GameRenderer {
 		Vector2f tr = new Vector2f(x+width/2, y+height/2);
 		Vector2f br = new Vector2f(x+width/2, y-height/2);
 		
-		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b);
-		vertices.put(tl.x).put(tl.y).put(r).put(g).put(b);
-		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b);
+		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b).put(0).put(0);
+		vertices.put(tl.x).put(tl.y).put(r).put(g).put(b).put(0).put(0);
+		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b).put(0).put(0);
 		
-		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b);
-		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b);
-		vertices.put(br.x).put(br.y).put(r).put(g).put(b);
+		vertices.put(bl.x).put(bl.y).put(r).put(g).put(b).put(0).put(0);
+		vertices.put(tr.x).put(tr.y).put(r).put(g).put(b).put(0).put(0);
+		vertices.put(br.x).put(br.y).put(r).put(g).put(b).put(0).put(0);
 		
 		numVertices += 6;
 	}

@@ -7,6 +7,7 @@ import static org.lwjgl.opengl.GL11.GL_TRUE;
 import graphics.GameRenderer;
 import graphics.TextRenderer;
 import graphics.Window;
+import graphics.opengl.Texture;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +24,6 @@ public abstract class AbstractGame {
 	protected GameRenderer renderer;
 	protected TextRenderer textRenderer;
 	protected boolean running;
-	
 	private GLFWErrorCallback errorCallback;
 	
 	

@@ -1,6 +1,7 @@
 package game.entity;
 
 import graphics.GameRenderer;
+import graphics.opengl.Texture;
 
 import java.awt.Color;
 import java.util.Random;
@@ -11,6 +12,7 @@ public class Dot extends Entity {
 
 	private Vector2f velocity;
 	private final Vector2f originalPosition;
+	private Texture texture;
 
 	public Dot(float x, float y, float width, float height) {
 		this(x, y, width, height, new Vector2f());
@@ -26,6 +28,10 @@ public class Dot extends Entity {
 	@Override
 	public void init() {
 
+	}
+	
+	public void init(Texture texture){
+		this.texture = texture;
 	}
 
 	@Override
@@ -63,7 +69,9 @@ public class Dot extends Entity {
 			endX = (float) (length*Math.cos(radians) + x);
 			endY = (float) (length*Math.sin(radians) + y);
 		}
-		renderer.drawLine(x, y, endX, endY, color);
+		//renderer.drawLine(x, y, endX, endY, color);
+		//renderer.drawSquare(x, y, width, height, color);
+		renderer.drawTextureRegion(texture, x, y, x, y, width, height);
 	}
 
 	/**

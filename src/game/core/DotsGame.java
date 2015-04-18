@@ -9,16 +9,19 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_G;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
-import static org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import game.entity.Background;
 import game.entity.Dot;
 import game.entity.GravityWell;
 import game.entity.Mouse;
+import graphics.opengl.Texture;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -40,7 +43,11 @@ public class DotsGame extends VariableTimestepGame {
 	private Mouse mouse;
 	private List<Dot> dots;
 	private List<GravityWell> wells;
+	private Background background;
 	private int gameWidth, gameHeight;
+	
+	private Texture texture;
+	private Texture simpleTexture;
 
 	private GLFWKeyCallback keycallback;
 	private GLFWMouseButtonCallback mousebuttoncallback;
@@ -213,15 +220,20 @@ public class DotsGame extends VariableTimestepGame {
 
 	@Override
 	public void renderGameObjects(float alpha) {
+		//background.render(renderer, alpha);
+		texture.bind();
 		dots.forEach((dot) -> dot.render(renderer, alpha, freeze));
+		renderer.flush();
+		simpleTexture.bind();
 		wells.forEach((well) -> well.render(renderer, alpha));
 		mouse.render(renderer, alpha);
-
-
 	}
 
 	@Override
 	public void disposeGameObjects() {
+		//background.dispose();
+		texture.delete();
+		simpleTexture.delete();
 		keycallback.release();
 		mousebuttoncallback.release();
 		mouse.dispose();
