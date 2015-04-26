@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STREAM_DRAW;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import graphics.opengl.Shader;
@@ -82,7 +82,7 @@ public class GameRenderer {
 
         // allocate storage for the vbo by sending null data to the gpu
         long size = BUFFER_SIZE * Float.BYTES;
-        vbo.uploadData(GL_ARRAY_BUFFER, size, GL_STREAM_DRAW);
+        vbo.uploadData(GL_ARRAY_BUFFER, size, GL_DYNAMIC_DRAW);
 
         // load our default shaders
         vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "res/test_vertex.glsl");
@@ -236,6 +236,16 @@ public class GameRenderer {
         drawTexture(texture, x, y, Color.WHITE);
     }
     
+    /**
+     * Draws the currently bound texture on specified coordinates and with
+     * specified width and height.
+     * 
+     * @param texture
+     * @param x X position of the texture
+     * @param y Y position of the texture
+     * @param width desired width of the texture
+     * @param height desired height of the texture 
+     */
     public void drawTexture(Texture texture, float x, float y, float width, float height){
     	float x2 = x+width;
     	float y2 = y+height;
