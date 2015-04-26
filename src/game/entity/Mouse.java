@@ -18,6 +18,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
 public class Mouse extends Entity{
+	private enum InputType { PUSH, SPRAY };
 	private Vector2f deltaPosition;
 	private boolean pressed;
 	private GLFWCursorPosCallback mousePosCallback;

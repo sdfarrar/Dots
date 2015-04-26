@@ -13,9 +13,13 @@ public class Dot extends Entity {
 	private final Vector2f originalPosition;
 
 	public Dot(float x, float y, float width, float height) {
+		this(x, y, width, height, new Vector2f());
+	}
+	
+	public Dot(float x, float y, float width, float height, Vector2f initialVelocity){
 		super(x, y, width, height);
 		color = Color.green;
-		velocity = new Vector2f();
+		velocity = initialVelocity;
 		originalPosition = new Vector2f(x,y);
 	}
 

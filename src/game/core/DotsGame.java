@@ -1,6 +1,10 @@
 package game.core;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_2;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_G;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
@@ -19,6 +23,9 @@ import game.entity.Mouse;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import math.Vector2f;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -26,6 +33,10 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 public class DotsGame extends VariableTimestepGame {
+	private static final int DOT_WIDTH = 1, DOT_HEIGHT= 1;
+	private static final int SPRAY_RATE = 13;
+	private enum InputType { PUSH, SPRAY };
+	
 	private Mouse mouse;
 	private List<Dot> dots;
 	private List<GravityWell> wells;
@@ -38,11 +49,13 @@ public class DotsGame extends VariableTimestepGame {
 	private boolean freeze;
 	private boolean heatmap;
 	private boolean wrap;
+	private boolean clearBoard;
 	
 	private boolean showUI;
 	private boolean showStats;
 
 	private int gravityType;
+	private InputType inputType;
 
 	public DotsGame(){
 		super();
@@ -52,9 +65,11 @@ public class DotsGame extends VariableTimestepGame {
 		freeze = false;
 		heatmap = false;
 		wrap = false;
+		clearBoard = false;
 		showUI = true;
 		showStats = false;
 		gravityType = 0;
+		inputType = InputType.PUSH;
 	}
 
 	public void init(){
@@ -84,6 +99,15 @@ public class DotsGame extends VariableTimestepGame {
 				}
 				if(key==GLFW_KEY_S && action==GLFW_PRESS){
 					showStats = !showStats;
+				}
+				if(key==GLFW_KEY_C && action==GLFW_PRESS){
+					clearBoard = true;
+				}
+				if(key==GLFW_KEY_1 && action==GLFW_PRESS){
+					inputType = InputType.PUSH;
+				}
+				if(key==GLFW_KEY_2 && action==GLFW_PRESS){
+					inputType = InputType.SPRAY;
 				}
 				if(key==GLFW_KEY_ESCAPE){					
 					window.close(id);
@@ -120,11 +144,13 @@ public class DotsGame extends VariableTimestepGame {
 			textRenderer.drawDebugText("(F)Freeze:" + ((freeze) ? "On" : "Off"), x, y - height*2 - vSpace);
 			textRenderer.drawDebugText("(H)Heatmap:" + ((heatmap) ? "On" : "Off"), x, y - height*3 - vSpace);
 			textRenderer.drawDebugText("(G)Gravity Type:" + gravityType, 10, y - height*4 - vSpace);
-			textRenderer.drawDebugText("(S)Show Stats", x, y - height*6 - vSpace);
+			textRenderer.drawDebugText("(0-9)Input Type:" + inputType, x, y - height*5 - vSpace);
+			textRenderer.drawDebugText("(C)Clear All:", 10, y - height*6 - vSpace);
+			textRenderer.drawDebugText("(S)Show Stats", x, y - height*8 - vSpace);			
 			if(showStats){
-				textRenderer.drawDebugText("FPS:" + timer.getFPS(), x, y - height*7 - vSpace);
-				textRenderer.drawDebugText("UPS:" + timer.getUPS(), x, y - height*8 - vSpace);
-				textRenderer.drawDebugText("Dot count:" + dots.size(), 10, y - height*9 - vSpace);
+				textRenderer.drawDebugText("FPS:" + timer.getFPS(), x, y - height*9 - vSpace);
+				textRenderer.drawDebugText("UPS:" + timer.getUPS(), x, y - height*10 - vSpace);
+				textRenderer.drawDebugText("Dot count:" + dots.size(), 10, y - height*11 - vSpace);
 			}
 		}
 	}
@@ -143,7 +169,8 @@ public class DotsGame extends VariableTimestepGame {
 
 		for(float i=1; i<gameWidth; i+=4){
 			for(float j=1; j<gameHeight; j+=4){
-				dots.add(new Dot(i, j, 1, 1));
+				Dot dot = new Dot(i, j, DOT_WIDTH, DOT_HEIGHT);	
+				dots.add(dot);
 			}
 		}
 	}
@@ -151,17 +178,33 @@ public class DotsGame extends VariableTimestepGame {
 	@Override
 	public void updateGameObjects(float delta) {
 		mouse.update(delta);
-
-		if(reset){
+		
+		if(clearBoard){
+			dots.clear();
+			wells.clear();
+			clearBoard = false;
+		}else if(reset){
 			dots.forEach((dot) -> dot.reset());
 			wells.clear();
 			reset = false;
 		}else{
+			if(inputType==InputType.SPRAY && mouse.isPressed()){
+				Random r = new Random();
+				float radius = mouse.getWidth();
+				for(int i=0; i<SPRAY_RATE; i++){
+					float xVel = (float) (r.nextFloat()*radius/100) * (((r.nextInt(2)%2)==0) ? 1 : -1);
+					float yVel = (float) (r.nextFloat()*radius/100) * (((r.nextInt(2)%2)==0) ? 1 : -1);
+					Dot dot = new Dot(mouse.getX(), mouse.getY(), DOT_WIDTH, DOT_HEIGHT, new Vector2f(xVel, yVel));
+					dots.add(dot);
+				}
+			}
 			dots.forEach((dot) -> {
 				if(!freeze){
 					dot.update(delta);
 				}
-				dot.collidesWith(mouse);
+				if(inputType==InputType.PUSH){
+					dot.collidesWith(mouse);
+				}
 				dot.checkCollision(gameWidth, gameHeight, delta, wrap);
 
 				if(!freeze){
