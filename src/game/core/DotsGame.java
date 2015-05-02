@@ -197,6 +197,7 @@ public class DotsGame extends VariableTimestepGame {
 					float xVel = (float) (r.nextFloat()*radius/100) * (((r.nextInt(2)%2)==0) ? 1 : -1);
 					float yVel = (float) (r.nextFloat()*radius/100) * (((r.nextInt(2)%2)==0) ? 1 : -1);
 					Dot dot = new Dot(mouse.getX(), mouse.getY(), DOT_WIDTH, DOT_HEIGHT, new Vector2f(xVel, yVel));
+					dot.init(texture);
 					dots.add(dot);
 				}
 			}
@@ -246,10 +247,15 @@ public class DotsGame extends VariableTimestepGame {
 		GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
 		gameHeight = heightBuffer.get();
 		gameWidth = widthBuffer.get();
+		
+		texture = Texture.loadTexture("res/abstract1024.gif");
+		texture = Texture.loadTexture("res/ai.png");
+		simpleTexture = Texture.loadTexture("res/simple.png");
 
 		for(float i=1; i<gameWidth; i+=4){
 			for(float j=1; j<gameHeight; j+=4){
 				Dot dot = new Dot(i, j, DOT_WIDTH, DOT_HEIGHT);	
+				dot.init(texture);
 				dots.add(dot);
 			}
 		}
