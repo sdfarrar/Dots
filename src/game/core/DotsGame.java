@@ -50,6 +50,7 @@ public class DotsGame extends VariableTimestepGame {
 	private boolean heatmap;
 	private boolean wrap;
 	private boolean clearBoard;
+	private boolean rebuildDots;
 	
 	private boolean showUI;
 	private boolean showStats;
@@ -68,8 +69,9 @@ public class DotsGame extends VariableTimestepGame {
 		clearBoard = false;
 		showUI = true;
 		showStats = false;
+		rebuildDots = false;
 		gravityType = 0;
-		inputType = InputType.PUSH;
+		inputType = InputType.PUSH;		
 	}
 
 	public void init(){
@@ -102,6 +104,7 @@ public class DotsGame extends VariableTimestepGame {
 				}
 				if(key==GLFW_KEY_C && action==GLFW_PRESS){
 					clearBoard = true;
+					rebuildDots = true;
 				}
 				if(key==GLFW_KEY_1 && action==GLFW_PRESS){
 					inputType = InputType.PUSH;
@@ -160,19 +163,7 @@ public class DotsGame extends VariableTimestepGame {
 		mouse = new Mouse(0, 0, 50);
 		mouse.init();
 
-		long id = GLFW.glfwGetCurrentContext();
-		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
-		IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
-		GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
-		gameHeight = heightBuffer.get();
-		gameWidth = widthBuffer.get();
-
-		for(float i=1; i<gameWidth; i+=4){
-			for(float j=1; j<gameHeight; j+=4){
-				Dot dot = new Dot(i, j, DOT_WIDTH, DOT_HEIGHT);	
-				dots.add(dot);
-			}
-		}
+		buildDots();
 	}
 
 	@Override
@@ -187,6 +178,10 @@ public class DotsGame extends VariableTimestepGame {
 			dots.forEach((dot) -> dot.reset());
 			wells.clear();
 			reset = false;
+			if(rebuildDots){
+				buildDots();
+				rebuildDots=false;
+			}
 		}else{
 			if(inputType==InputType.SPRAY && mouse.isPressed()){
 				Random r = new Random();
@@ -230,6 +225,22 @@ public class DotsGame extends VariableTimestepGame {
 		keycallback.release();
 		mousebuttoncallback.release();
 		mouse.dispose();
+	}
+	
+	private void buildDots(){
+		long id = GLFW.glfwGetCurrentContext();
+		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
+		IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+		GLFW.glfwGetFramebufferSize(id, widthBuffer, heightBuffer);
+		gameHeight = heightBuffer.get();
+		gameWidth = widthBuffer.get();
+
+		for(float i=1; i<gameWidth; i+=4){
+			for(float j=1; j<gameHeight; j+=4){
+				Dot dot = new Dot(i, j, DOT_WIDTH, DOT_HEIGHT);	
+				dots.add(dot);
+			}
+		}
 	}
 
 }
