@@ -419,8 +419,8 @@ public class GameRenderer {
 		float g = color.getGreen();
 		float b = color.getBlue();
 		
-		lineVertices.put(x1).put(y1).put(r).put(g).put(b).put(0).put(0);
-		lineVertices.put(x2).put(y2).put(r).put(g).put(b).put(0).put(0);
+		lineVertices.put(x1).put(y1).put(r).put(g).put(b).put(1).put(0);
+		lineVertices.put(x2).put(y2).put(r).put(g).put(b).put(0).put(1);
 		numLineVertices+=2;
 	}
     

@@ -53,10 +53,10 @@ public class Dot extends Entity {
 	
 	@Override
 	public void render(GameRenderer renderer, float alpha) {
-		render(renderer, alpha, false);		
+		render(renderer, alpha, false, false);		
 	}
 	
-	public void render(GameRenderer renderer, float alpha, boolean frozen) {
+	public void render(GameRenderer renderer, float alpha, boolean frozen, boolean useImage) {
 		Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
 		float x = interpolatedPosition.x;
 		float y = interpolatedPosition.y;
@@ -69,9 +69,13 @@ public class Dot extends Entity {
 			endX = (float) (length*Math.cos(radians) + x);
 			endY = (float) (length*Math.sin(radians) + y);
 		}
-		//renderer.drawLine(x, y, endX, endY, color);
+		if(useImage){
+			renderer.drawTextureRegion(texture, x, y, x, y, width, height);
+		}else{
+			renderer.drawLine(x, y, endX, endY, color);
+		}
 		//renderer.drawSquare(x, y, width, height, color);
-		renderer.drawTextureRegion(texture, x, y, x, y, width, height);
+		
 	}
 
 	/**

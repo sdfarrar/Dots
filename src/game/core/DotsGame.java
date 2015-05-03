@@ -58,7 +58,7 @@ public class DotsGame extends VariableTimestepGame {
 	private boolean wrap;
 	private boolean clearBoard;
 	private boolean rebuildDots;
-	
+	private boolean useImage; //TODO disable image and use old dots
 	private boolean showUI;
 	private boolean showStats;
 
@@ -77,6 +77,7 @@ public class DotsGame extends VariableTimestepGame {
 		showUI = true;
 		showStats = false;
 		rebuildDots = false;
+		useImage = false;
 		gravityType = 0;
 		inputType = InputType.PUSH;		
 	}
@@ -112,6 +113,9 @@ public class DotsGame extends VariableTimestepGame {
 				if(key==GLFW_KEY_C && action==GLFW_PRESS){
 					clearBoard = true;
 					rebuildDots = true;
+				}
+				if(key==GLFW_KEY_I && action==GLFW_PRESS){
+					useImage = !useImage;
 				}
 				if(key==GLFW_KEY_1 && action==GLFW_PRESS){
 					inputType = InputType.PUSH;
@@ -153,14 +157,15 @@ public class DotsGame extends VariableTimestepGame {
 			textRenderer.drawDebugText("(W)Wrap:" + ((wrap) ? "On" : "Off"), x, y - height - vSpace);
 			textRenderer.drawDebugText("(F)Freeze:" + ((freeze) ? "On" : "Off"), x, y - height*2 - vSpace);
 			textRenderer.drawDebugText("(H)Heatmap:" + ((heatmap) ? "On" : "Off"), x, y - height*3 - vSpace);
-			textRenderer.drawDebugText("(G)Gravity Type:" + gravityType, 10, y - height*4 - vSpace);
-			textRenderer.drawDebugText("(0-9)Input Type:" + inputType, x, y - height*5 - vSpace);
-			textRenderer.drawDebugText("(C)Clear All:", 10, y - height*6 - vSpace);
-			textRenderer.drawDebugText("(S)Show Stats", x, y - height*8 - vSpace);			
+			textRenderer.drawDebugText("(H)Image:" + ((useImage) ? "On" : "Off"), x, y - height*4 - vSpace);
+			textRenderer.drawDebugText("(G)Gravity Type:" + gravityType, 10, y - height*5 - vSpace);
+			textRenderer.drawDebugText("(0-9)Input Type:" + inputType, x, y - height*6 - vSpace);
+			textRenderer.drawDebugText("(C)Clear All:", 10, y - height*7 - vSpace);
+			textRenderer.drawDebugText("(S)Show Stats", x, y - height*9 - vSpace);			
 			if(showStats){
-				textRenderer.drawDebugText("FPS:" + timer.getFPS(), x, y - height*9 - vSpace);
-				textRenderer.drawDebugText("UPS:" + timer.getUPS(), x, y - height*10 - vSpace);
-				textRenderer.drawDebugText("Dot count:" + dots.size(), 10, y - height*11 - vSpace);
+				textRenderer.drawDebugText("FPS:" + timer.getFPS(), x, y - height*10 - vSpace);
+				textRenderer.drawDebugText("UPS:" + timer.getUPS(), x, y - height*11 - vSpace);
+				textRenderer.drawDebugText("Dot count:" + dots.size(), 10, y - height*12 - vSpace);
 			}
 		}
 	}
@@ -223,7 +228,7 @@ public class DotsGame extends VariableTimestepGame {
 	public void renderGameObjects(float alpha) {
 		//background.render(renderer, alpha);
 		texture.bind();
-		dots.forEach((dot) -> dot.render(renderer, alpha, freeze));
+		dots.forEach((dot) -> dot.render(renderer, alpha, freeze, useImage));
 		renderer.flush();
 		simpleTexture.bind();
 		wells.forEach((well) -> well.render(renderer, alpha));
